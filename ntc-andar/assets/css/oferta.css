@@ -445,3 +445,62 @@
 .machines--dark .machines-note {
 	color: rgba(255, 255, 255, 0.55);
 }
+
+/* ------------------------------------------------- loga szczepów probiotycznych */
+
+/* Znaczek szczepu stoi obok nazwy, a nie nad nią - inaczej rozbijał kartę na
+   dwie części i lista cech oddalała się od nagłówka. Na wąskim ekranie wraca
+   nad tekst, bo przy 120 px znaczka na kolumnę tekstu zostawało za mało. */
+
+/* Rdzeń opakowuje zawartość grupy w dodatkowy kontener, więc układ trzeba
+   ustawić na nim - na samej grupie flex miałby tylko jedno dziecko. Selektor
+   obejmuje oba warianty, bo bez kontenera grupa renderuje dzieci wprost. */
+.szczep-naglowek,
+.szczep-naglowek > .wp-block-group__inner-container {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+}
+
+.szczep-naglowek {
+	margin: 40px 0 12px;
+}
+
+.szczep-naglowek:first-child {
+	margin-top: 0;
+}
+
+.szczep-naglowek > .wp-block-group__inner-container > * {
+	margin: 0;
+}
+
+.szczep-naglowek .wp-block-image {
+	flex: none;
+	margin: 0;
+}
+
+.szczep-naglowek img {
+	width: 88px;
+	height: 88px;
+	flex: none;
+	object-fit: contain;
+	display: block;
+}
+
+.szczep-naglowek h3 {
+	margin: 0;
+}
+
+@media (max-width: 600px) {
+	.szczep-naglowek,
+	.szczep-naglowek > .wp-block-group__inner-container {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 12px;
+	}
+
+	.szczep-naglowek img {
+		width: 72px;
+		height: 72px;
+	}
+}
