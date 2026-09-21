@@ -196,8 +196,8 @@ return array(
 
 	/* ------------------------------------------------------------------ blog */
 	'blog.title'               => 'Blog',
-	'blog.badge'               => 'Blog',
-	'blog.sub'                 => 'Co słychać w surowcach farmaceutycznych: zmiany w przepisach, nowe źródła dostaw i praktyka pracy z dokumentacją.',
+	'blog.badge'               => '',
+	'blog.sub'                 => '',
 	'blog.read_more'           => 'Czytaj dalej',
 	'blog.back'                => 'Wróć do listy wpisów',
 	'blog.prev'                => 'Poprzedni wpis',

@@ -196,8 +196,8 @@ return array(
 
 	/* ------------------------------------------------------------------ blog */
 	'blog.title'               => 'Blog',
-	'blog.badge'               => 'Blog',
-	'blog.sub'                 => 'What is happening in pharmaceutical raw materials: regulatory changes, new sources of supply and the practice of working with documentation.',
+	'blog.badge'               => '',
+	'blog.sub'                 => '',
 	'blog.read_more'           => 'Read more',
 	'blog.back'                => 'Back to all posts',
 	'blog.prev'                => 'Previous post',
