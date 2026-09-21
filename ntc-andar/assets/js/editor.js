@@ -670,12 +670,21 @@
 					InspectorControls,
 					null,
 					imagePanel( props, 'Zdjęcie sekcji' ),
-					linkPanel( props, 'ctaText', 'ctaUrl', 'Przycisk do dostawcy' )
+					linkPanel( props, 'ctaText', 'ctaUrl', 'Przycisk do dostawcy' ),
+					el(
+						PanelBody,
+						{ title: 'Układ', initialOpen: false },
+						el( ToggleControl, {
+							label: 'Ciemne tło (granat)',
+							checked: !! props.attributes.dark,
+							onChange: function ( v ) { props.setAttributes( { dark: v } ); }
+						} )
+					)
 				),
 				el(
 					'div',
 					useBlockProps(),
-					frame( 'Maszyny', true, el(
+					frame( 'Maszyny', !! props.attributes.dark, el(
 						Fragment,
 						null,
 						rich( props, 'label', 'p', 'ntc-edit-eyebrow', 'Nadtytuł' ),
@@ -810,6 +819,12 @@
 							label: 'Jasnoniebieskie tło',
 							checked: !! props.attributes.alt,
 							onChange: function ( v ) { props.setAttributes( { alt: v } ); }
+						} ),
+						el( ToggleControl, {
+							label: 'Ciemne tło (granat)',
+							help: 'Ma pierwszeństwo przed jasnoniebieskim.',
+							checked: !! props.attributes.dark,
+							onChange: function ( v ) { props.setAttributes( { dark: v } ); }
 						} ),
 						el( ToggleControl, {
 							label: 'Zdjęcie po lewej',

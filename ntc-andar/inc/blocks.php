@@ -510,7 +510,7 @@ function ntc_block_definitions() {
 		),
 
 		'ntc/machines' => array(
-			'title'      => 'NTC - Maszyny (ciemna sekcja)',
+			'title'      => 'NTC - Maszyny',
 			'icon'       => 'admin-tools',
 			'attributes' => array_merge(
 				array(
@@ -520,6 +520,10 @@ function ntc_block_definitions() {
 					'note'    => $text,
 					'ctaText' => $text,
 					'ctaUrl'  => $text,
+					'dark'    => array(
+						'type'    => 'boolean',
+						'default' => false,
+					),
 				),
 				$img
 			),
@@ -605,6 +609,10 @@ function ntc_block_definitions() {
 						'default' => false,
 					),
 					'flip'  => array(
+						'type'    => 'boolean',
+						'default' => false,
+					),
+					'dark'  => array(
 						'type'    => 'boolean',
 						'default' => false,
 					),
@@ -1599,7 +1607,7 @@ function ntc_render_category( $attrs ) {
 function ntc_render_machines( $attrs ) {
 	ob_start();
 	?>
-	<section class="cat-section machines" id="<?php echo esc_attr( ntc_section_id( $attrs, 'cat-maszyny' ) ); ?>">
+	<section class="cat-section machines<?php echo ntc_a( $attrs, 'dark', false ) ? ' machines--dark' : ''; ?>" id="<?php echo esc_attr( ntc_section_id( $attrs, 'cat-maszyny' ) ); ?>">
 		<div class="section-inner">
 			<div class="cat-grid">
 				<div class="cat-text">
@@ -1802,11 +1810,20 @@ function ntc_render_quick_cta( $attrs ) {
 function ntc_render_checklist( $attrs, $content ) {
 	$alt   = ntc_a( $attrs, 'alt', false );
 	$flip  = ntc_a( $attrs, 'flip', false );
+	$ciemna = ntc_a( $attrs, 'dark', false );
 	$kotwa = ntc_section_id( $attrs );
+
+	// Ciemne tło wyklucza jasny wariant - dwa tła naraz nie mają sensu.
+	$klasy = 'section checklist';
+	if ( $ciemna ) {
+		$klasy .= ' checklist--dark';
+	} elseif ( $alt ) {
+		$klasy .= ' checklist--alt';
+	}
 
 	ob_start();
 	?>
-	<section class="section checklist<?php echo $alt ? ' checklist--alt' : ''; ?>"<?php echo $kotwa ? ' id="' . esc_attr( $kotwa ) . '"' : ''; ?>>
+	<section class="<?php echo esc_attr( $klasy ); ?>"<?php echo $kotwa ? ' id="' . esc_attr( $kotwa ) . '"' : ''; ?>>
 		<div class="section-inner">
 			<div class="checklist-grid<?php echo $flip ? ' checklist-grid--flip' : ''; ?>">
 				<div class="checklist-text">

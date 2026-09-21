@@ -19,6 +19,48 @@
 	background: var(--ice-100);
 }
 
+/* Wariant na granacie. Włącza go przełącznik "Ciemne tło" w edytorze, więc
+   redakcja sama decyduje, które sekcje są jasne, a które ciemne. */
+
+.checklist--dark {
+	background: linear-gradient(160deg, #082235 0%, #0b3a55 50%, #0d5068 100%);
+}
+
+.checklist--dark .section-label {
+	color: var(--teal-400);
+}
+
+.checklist--dark .section-title {
+	color: #fff;
+}
+
+.checklist--dark .section-sub {
+	color: rgba(255, 255, 255, 0.65);
+}
+
+.checklist--dark .checklist-tick {
+	color: var(--teal-400);
+}
+
+.checklist--dark .checklist-body {
+	color: rgba(255, 255, 255, 0.75);
+}
+
+/* Wyróżnienia i odnośniki na granacie biorą jaśniejszy odcień marki -
+   teal-600 z jasnej wersji byłby na tym tle nieczytelny. */
+.checklist--dark .checklist-body strong,
+.checklist--dark .checklist-body a {
+	color: var(--teal-400);
+}
+
+.checklist--dark .checklist-body a {
+	border-bottom-color: rgba(66, 217, 196, 0.4);
+}
+
+.checklist--dark .checklist-body a:hover {
+	border-bottom-color: var(--teal-400);
+}
+
 /* Kolumny równej wysokości, żeby ilustracja mogła się rozciągnąć na całą
    sekcję. Przy wyśrodkowaniu zdjęcie zostawało niskim paskiem obok długiej
    listy i pół kolumny świeciło pustką. */

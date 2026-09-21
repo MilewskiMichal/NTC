@@ -229,11 +229,15 @@
 	white-space: nowrap;
 }
 
-/* -------------------------------------------------- maszyny (ciemna sekcja) */
+/* ------------------------------------------------------------------ maszyny */
+
+/* Domyślnie sekcja jest jasna. Granat włącza się przełącznikiem "Ciemne tło"
+   w edytorze - dzięki temu kolejność jasnych i ciemnych pasów na stronie
+   ustawia redakcja, bez zmian w motywie. */
 
 .machines {
-	background: linear-gradient(160deg, #082235 0%, #0b3a55 50%, #0d5068 100%);
-	padding: 100px 0;
+	background: #fff;
+	padding: var(--odstep-sekcji) 0;
 }
 
 .machines .cat-grid {
@@ -241,17 +245,24 @@
 	align-items: center;
 }
 
-.machines .section-label {
+.machines .section-sub {
+	margin-bottom: 32px;
+}
+
+.machines--dark {
+	background: linear-gradient(160deg, #082235 0%, #0b3a55 50%, #0d5068 100%);
+}
+
+.machines--dark .section-label {
 	color: var(--teal-400);
 }
 
-.machines .section-title {
+.machines--dark .section-title {
 	color: #fff;
 }
 
-.machines .section-sub {
+.machines--dark .section-sub {
 	color: rgba(255, 255, 255, 0.65);
-	margin-bottom: 32px;
 }
 
 @media (max-width: 900px) {
@@ -428,5 +439,9 @@
 	margin-top: 24px;
 	font-size: 14px;
 	line-height: 1.7;
+	color: var(--slate-500);
+}
+
+.machines--dark .machines-note {
 	color: rgba(255, 255, 255, 0.55);
 }
