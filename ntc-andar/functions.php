@@ -12,6 +12,7 @@ define( 'NTC_VERSION', '2.0.0' );
 require_once get_template_directory() . '/inc/i18n.php';
 require_once get_template_directory() . '/inc/polylang.php';
 require_once get_template_directory() . '/inc/helpers.php';
+require_once get_template_directory() . '/inc/typografia.php';
 require_once get_template_directory() . '/inc/customizer.php';
 require_once get_template_directory() . '/inc/post-types.php';
 require_once get_template_directory() . '/inc/demo-content.php';

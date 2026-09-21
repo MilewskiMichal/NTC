@@ -1320,8 +1320,6 @@ function ntc_render_step( $attrs ) {
 
 /** Sekcja kontaktowa strony głównej. */
 function ntc_render_contact( $attrs ) {
-	$co = ntc_company();
-
 	ob_start();
 	?>
 	<section class="section contact" id="kontakt">
@@ -1357,20 +1355,11 @@ function ntc_render_contact( $attrs ) {
 				</div>
 
 				<div>
-					<?php ntc_the_contact_form( 'home' ); ?>
-
-					<div class="contact-details">
-						<div class="contact-detail">
-							<?php ntc_the_icon( 'pin' ); ?>
-							<span><?php echo esc_html( $co['street'] . ', ' . $co['city'] ); ?></span>
-						</div>
-						<a class="contact-detail" href="<?php echo esc_url( $co['phone_href'] ); ?>">
-							<?php ntc_the_icon( 'phone' ); ?><span><?php echo esc_html( $co['phone'] ); ?></span>
-						</a>
-						<a class="contact-detail" href="mailto:<?php echo esc_attr( $co['email'] ); ?>">
-							<?php ntc_the_icon( 'mail' ); ?><span><?php echo esc_html( $co['email'] ); ?></span>
-						</a>
-					</div>
+					<?php
+					// Adres, telefon i e-mail stały tu wcześniej pod formularzem, ale
+					// stopka zaczyna się kilka pikseli niżej i powtarza je co do znaku.
+					ntc_the_contact_form( 'home' );
+					?>
 				</div>
 			</div>
 		</div>

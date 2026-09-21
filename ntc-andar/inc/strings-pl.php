@@ -81,11 +81,11 @@ return array(
 	'offer.4.title'            => 'Białka mleka',
 	'offer.4.text'             => 'Frakcje białek mleka do żywności funkcjonalnej, sportowej i preparatów odżywczych. Zapytaj o dostępne specyfikacje.',
 	'offer.5.tag'              => 'Substancje bioaktywne',
-	'offer.5.title'            => 'Kolageny',
+	'offer.5.title'            => 'Kolagen',
 	'offer.5.text'             => 'Hydrolizaty kolagenu, tripeptydy kolagenowe i żelatyna z wytwórni japońskiej firmy Jellice, dla przemysłu spożywczego.',
 	'offer.6.tag'              => 'Przemysł & usługi',
 	'offer.6.title'            => 'Maszyny / Usługi',
-	'offer.6.text'             => 'Skup i sprzedaż używanych maszyn dla farmacji i przemysłu spożywczego. Poszukiwania źródeł dostaw, organizacja audytów GMP u wytwórców i wsparcie dokumentacyjne projektów.',
+	'offer.6.text'             => 'Skup i sprzedaż używanych maszyn dla przemysłu spożywczego. Poszukiwania źródeł dostaw, organizacja audytów GMP u wytwórców i wsparcie dokumentacyjne projektów.',
 
 	/* ------------------------------------------------------ Strona główna: statystyki */
 	'stats.1.label'            => "lat doświadczenia\nna polskim rynku",

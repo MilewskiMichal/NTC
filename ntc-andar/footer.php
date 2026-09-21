@@ -52,8 +52,10 @@ $ntc_copy = (string) get_theme_mod( 'ntc_footer_copy', ntc_raw( 'footer.copy' ) 
 						'footer_nav',
 						array(
 							ntc_raw( 'nav.about' )   => ntc_home_anchor( 'about' ),
-							ntc_raw( 'nav.quality' ) => ntc_home_anchor( 'quality' ),
+							ntc_raw( 'nav.how' )     => ntc_page_url( 'jak-dzialamy' ),
+							// Oferta przed Jakością, tak jak w menu górnym.
 							ntc_raw( 'nav.offer' )   => ntc_page_url( 'oferta' ),
+							ntc_raw( 'nav.quality' ) => ntc_home_anchor( 'quality' ),
 							ntc_raw( 'blog.title' )  => ntc_blog_url(),
 							ntc_raw( 'nav.contact' ) => ntc_page_url( 'kontakt' ),
 						)

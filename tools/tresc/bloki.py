@@ -58,7 +58,10 @@ def podmien_atrybuty(blok, zmiany):
     nazwa, atrybuty, tekst = blok
     nowe = dict(atrybuty)
     nowe.update(zmiany)
+    # Ostre nawiasy uciekają tak, jak robi to serializer Gutenberga. Bez tego
+    # zapis działa tylko dlatego, że WordPress poprawia to po nas.
     surowe = json.dumps(nowe, ensure_ascii=False, separators=(',', ':'))
+    surowe = surowe.replace('<', '\\u003c').replace('>', '\\u003e')
     stary = OTWARCIE.search(tekst)
     glowa = '<!-- wp:%s %s %s-->' % (nazwa, surowe, '/' if stary.group(4) else '')
     return (nazwa, nowe, glowa + tekst[stary.end():])
