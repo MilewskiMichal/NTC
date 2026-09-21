@@ -1,0 +1,188 @@
+/*
+ * Wygląd bloków NTC w edytorze.
+ *
+ * Celowo nie próbujemy odtworzyć w edytorze pełnej grafiki strony - gradienty,
+ * bloby i pulsujące pierścienie utrudniałyby trafienie w pole tekstowe. Zamiast
+ * tego każda sekcja dostaje czytelną ramkę z podpisem, a pola zachowują
+ * hierarchię wielkości z projektu, żeby było widać co jest nagłówkiem, a co
+ * akapitem. Prawdziwy wygląd sprawdza się podglądem strony.
+ */
+
+.ntc-edit-frame {
+	position: relative;
+	border: 1px solid #dbe3ea;
+	border-left: 4px solid #1bbfa8;
+	border-radius: 10px;
+	padding: 34px 22px 20px;
+	margin: 8px 0;
+	background: #fff;
+}
+
+.ntc-edit-frame--dark {
+	background: linear-gradient(160deg, #0d2b41, #10485c);
+	border-color: #0b3a55;
+}
+
+.ntc-edit-label {
+	position: absolute;
+	top: 8px;
+	left: 18px;
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: #1bbfa8;
+}
+
+.ntc-edit-frame--dark .ntc-edit-label {
+	color: #42d9c4;
+}
+
+/* Hierarchia pól - odpowiada wielkościom z projektu, w mniejszej skali. */
+
+.ntc-edit-badge,
+.ntc-edit-eyebrow {
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: #1bbfa8;
+	margin: 0 0 10px;
+}
+
+.ntc-edit-frame--dark .ntc-edit-badge,
+.ntc-edit-frame--dark .ntc-edit-eyebrow {
+	color: #42d9c4;
+}
+
+.ntc-edit-h1,
+.ntc-edit-h2,
+.ntc-edit-h3 {
+	font-family: var(--font-display);
+	color: #0b2a42;
+	line-height: 1.2;
+	margin: 0 0 12px;
+}
+
+.ntc-edit-h1 { font-size: 32px; font-weight: 700; }
+.ntc-edit-h2 { font-size: 26px; font-weight: 600; }
+.ntc-edit-h3 { font-size: 17px; font-weight: 700; }
+
+.ntc-edit-frame--dark .ntc-edit-h1,
+.ntc-edit-frame--dark .ntc-edit-h2,
+.ntc-edit-frame--dark .ntc-edit-h3 {
+	color: #fff;
+}
+
+.ntc-edit-sub,
+.ntc-edit-body {
+	font-size: 15px;
+	line-height: 1.6;
+	color: #4a6a82;
+	margin: 0 0 12px;
+	max-width: 640px;
+}
+
+.ntc-edit-frame--dark .ntc-edit-sub,
+.ntc-edit-frame--dark .ntc-edit-body {
+	color: rgba(255, 255, 255, 0.75);
+}
+
+.ntc-edit-tag {
+	display: inline-block;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #1bbfa8;
+	background: rgba(27, 191, 168, 0.12);
+	border-radius: 100px;
+	padding: 3px 10px;
+	margin: 0 0 8px;
+}
+
+.ntc-edit-hint {
+	font-size: 12px;
+	line-height: 1.5;
+	color: #8aa8be;
+	margin: 12px 0 0;
+	font-style: italic;
+}
+
+.ntc-edit-frame--dark .ntc-edit-hint {
+	color: rgba(255, 255, 255, 0.5);
+}
+
+/* Układy dla bloków potomnych. */
+
+.ntc-edit-grid > .block-editor-inner-blocks > .block-editor-block-list__layout {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 14px;
+}
+
+.ntc-edit-grid--3 > .block-editor-inner-blocks > .block-editor-block-list__layout {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ntc-edit-grid--4 > .block-editor-inner-blocks > .block-editor-block-list__layout {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 960px) {
+	.ntc-edit-grid > .block-editor-inner-blocks > .block-editor-block-list__layout,
+	.ntc-edit-grid--3 > .block-editor-inner-blocks > .block-editor-block-list__layout,
+	.ntc-edit-grid--4 > .block-editor-inner-blocks > .block-editor-block-list__layout {
+		grid-template-columns: 1fr;
+	}
+}
+
+.ntc-edit-card {
+	border: 1px solid #e2e8ee;
+	border-radius: 10px;
+	padding: 16px;
+	background: #fff;
+	height: 100%;
+}
+
+.ntc-edit-card--center {
+	text-align: left;
+}
+
+.ntc-edit-row {
+	border-bottom: 1px solid #e8eef3;
+	padding: 12px 0;
+	background: #fff;
+}
+
+.ntc-edit-list > .block-editor-inner-blocks > .block-editor-block-list__layout > *:last-child .ntc-edit-row {
+	border-bottom: none;
+}
+
+.ntc-edit-thumb {
+	display: block;
+	width: 100%;
+	height: 110px;
+	object-fit: cover;
+	border-radius: 8px;
+	margin-bottom: 12px;
+}
+
+.ntc-edit-thumb--empty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: repeating-linear-gradient(-45deg, #eef6f4, #eef6f4 10px, #e3f0ed 10px, #e3f0ed 20px);
+	color: #7aab9c;
+	font-size: 12px;
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Pola liczbowe w liczniku - w kolumnie zamiast na całą szerokość. */
+.ntc-edit-card .components-base-control {
+	margin-bottom: 10px;
+}
+
+.ntc-edit-card .components-base-control:last-child {
+	margin-bottom: 0;
+}

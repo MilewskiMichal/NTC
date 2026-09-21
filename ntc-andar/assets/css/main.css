@@ -1,0 +1,2161 @@
+/*
+ * NTC Andar - style wspólne.
+ *
+ * Wartości (kolory, gradienty, krzywe blobów, czasy animacji, breakpointy) są
+ * przeniesione 1:1 z prototypów z Claude Design. Zmiany wobec prototypu są
+ * celowe i opisane komentarzem w miejscu.
+ *
+ * Kolejność sekcji: zmienne, reset, nawigacja, hero, wspólne sekcje, sekcje
+ * strony głównej, stopka, responsywność.
+ */
+
+/* ---------------------------------------------------------------- zmienne */
+
+:root {
+	--navy-900: #061828;
+	--navy-800: #082235;
+	--navy-700: #0b2a42;
+	--navy-600: #0b3a55;
+	--navy-500: #0d5068;
+	--teal-600: #0ca882;
+	--teal-500: #1bbfa8;
+	--teal-400: #42d9c4;
+	--slate-500: #4a6a82;
+	--slate-400: #8aa8be;
+	--ice-100: #f4f8fb;
+	--line-100: #e8f0f5;
+
+	--wrap: 1240px;
+	--gutter: 40px;
+
+	/* Odstęp sekcji w zmiennej, bo poza samą sekcją potrzebuje go jeszcze
+	   ilustracja na podstronie jakości - wychodzi ujemnym marginesem dokładnie
+	   o tę wartość, żeby sięgnąć krawędzi sekcji. */
+	--odstep-sekcji: 100px;
+
+	/* Kroje trzymamy w zmiennych, więc zmiana rodziny to jedna linijka, a nie
+	   trzydzieści deklaracji po arkuszach. Dziś oba warianty to Barlow; podział
+	   na nagłówkowy i tekstowy zostaje, gdyby kiedyś doszedł osobny krój
+	   display. */
+	--font-display: 'Barlow', system-ui, sans-serif;
+	--font-body: 'Barlow', Helvetica, system-ui, sans-serif;
+}
+
+/* ------------------------------------------------------------------ reset */
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	font-family: var(--font-body);
+	background: #fff;
+	color: var(--navy-700);
+	overflow-x: hidden;
+}
+
+img {
+	max-width: 100%;
+}
+
+/* Skip link - widoczny dopiero po sfokusowaniu z klawiatury. */
+.skip-link {
+	position: absolute;
+	left: -9999px;
+	top: 0;
+	z-index: 200;
+	background: #fff;
+	color: var(--navy-700);
+	padding: 12px 20px;
+	border-radius: 0 0 12px 0;
+	font-size: 14px;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.skip-link:focus {
+	left: 0;
+}
+
+:focus-visible {
+	outline: 2px solid var(--teal-500);
+	outline-offset: 3px;
+}
+
+/* Etykieta widoczna tylko dla czytników ekranu. Pola formularza na stronie
+   głównej mają w projekcie sam placeholder - placeholder nie jest etykietą,
+   więc prawdziwy <label> jest, tylko schowany. */
+.screen-reader-text {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* Treść z edytora WordPressa (polityka prywatności, regulamin). */
+.ntc-entry-content {
+	font-size: 16px;
+	line-height: 1.75;
+	color: var(--slate-500);
+	max-width: 720px;
+}
+
+.ntc-entry-content > * + * {
+	margin-top: 18px;
+}
+
+.ntc-entry-content h2,
+.ntc-entry-content h3 {
+	font-family: var(--font-display);
+	color: var(--navy-700);
+	margin-top: 36px;
+}
+
+.ntc-entry-content a {
+	color: var(--teal-600);
+}
+
+.ntc-entry-content ul,
+.ntc-entry-content ol {
+	padding-left: 22px;
+}
+
+/* Kto ustawił w systemie ograniczenie ruchu, dostaje stronę bez pulsowania,
+   obracania i płynnego przewijania. */
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.001ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.001ms !important;
+	}
+}
+
+/* ------------------------------------------------------------- nawigacja */
+
+.nav {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 100;
+	transition: background 0.4s, box-shadow 0.4s, padding 0.4s;
+	padding: 34px 0;
+}
+
+.nav.scrolled,
+.nav--solid {
+	background: rgba(255, 255, 255, 0.97);
+	box-shadow: 0 1px 24px rgba(11, 42, 66, 0.10);
+	padding: 20px 0;
+}
+
+.nav--solid {
+	box-shadow: 0 1px 24px rgba(11, 42, 66, 0.06);
+}
+
+.nav-inner {
+	max-width: var(--wrap);
+	margin: 0 auto;
+	padding: 0 var(--gutter);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.logo {
+	display: flex;
+	align-items: center;
+	text-decoration: none;
+}
+
+.logo img {
+	height: 42px;
+	width: auto;
+	display: block;
+}
+
+/* Logotyp trzyma jeden rozmiar. Zmniejszanie go na białym pasku miało sens,
+   gdy ten pasek pojawiał się dopiero po przewinięciu - teraz jest zawsze. */
+
+/* Pasek "lity" (podstrony na jasnym tle) ma białe tło od pierwszej klatki, więc
+   musi od razu nieść kolory stanu przewiniętego. Brak tych reguł był powodem,
+   dla którego kontakt pokazywał sam link powrotu zamiast nawigacji: menu było
+   białe na białym. */
+
+/* Pasek składa się z menu z kokpitu (ul.nav-links) i doklejanych przez motyw
+   przycisku kontaktu oraz przełącznika języka (.nav-extra). Rozdzielone, bo
+   pierwsze pochodzi z Wygląd → Menu, a drugie musi być zawsze. */
+.nav-menu {
+	display: flex;
+	align-items: center;
+	gap: 40px;
+}
+
+.nav-links {
+	display: flex;
+	align-items: center;
+	gap: 32px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.nav-extra {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.nav-links a {
+	font-size: 14px;
+	font-weight: 500;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 0.85);
+	text-decoration: none;
+	transition: color 0.2s;
+}
+
+.nav.scrolled .nav-links a,
+.nav--solid .nav-links a {
+	color: #2a4a62;
+}
+
+.nav-links a:hover,
+.nav-links a.active,
+.nav-links .current-menu-item > a {
+	color: var(--teal-500);
+}
+
+/* Rozwijana oferta. Pozycja "Oferta" prowadzi na podstronę zbiorczą, a lista
+   pod nią pokazuje pełny zakres - bez niej trzeba najpierw wejść na ofertę,
+   żeby w ogóle zobaczyć, czym firma handluje. Rozwija się na najechanie i na
+   fokus z klawiatury; na dotyku otwiera je skrypt (klasa .open). */
+.nav-links .menu-item-has-children {
+	position: relative;
+}
+
+.nav-links .menu-item-has-children > a::after {
+	content: '';
+	display: inline-block;
+	width: 5px;
+	height: 5px;
+	margin-left: 7px;
+	vertical-align: 2px;
+	border-right: 1.5px solid currentColor;
+	border-bottom: 1.5px solid currentColor;
+	transform: rotate(45deg);
+	transition: transform 0.2s;
+}
+
+.nav-links .menu-item-has-children.open > a::after {
+	transform: rotate(-135deg);
+}
+
+.nav-links .sub-menu {
+	position: absolute;
+	top: 100%;
+	left: -18px;
+	z-index: 20;
+	min-width: 250px;
+	margin: 0;
+	padding: 10px 0;
+	list-style: none;
+	background: #fff;
+	border-radius: 14px;
+	box-shadow: 0 18px 44px rgba(11, 42, 66, 0.18);
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(-6px);
+	transition: opacity 0.18s, transform 0.18s, visibility 0.18s;
+}
+
+/* Odstęp między pozycją a listą przykryty niewidzialnym pasem - inaczej
+   kursor po drodze wychodzi poza element i lista znika w połowie ruchu. */
+.nav-links .menu-item-has-children::after {
+	content: '';
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	height: 18px;
+}
+
+.nav-links .menu-item-has-children:hover > .sub-menu,
+.nav-links .menu-item-has-children:focus-within > .sub-menu,
+.nav-links .menu-item-has-children.open > .sub-menu {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(8px);
+}
+
+.nav-links .sub-menu a,
+.nav.scrolled .nav-links .sub-menu a,
+.nav--solid .nav-links .sub-menu a {
+	display: block;
+	padding: 9px 22px;
+	font-size: 13px;
+	letter-spacing: 0.02em;
+	text-transform: none;
+	color: #2a4a62;
+}
+
+.nav-links .sub-menu a:hover {
+	background: var(--ice-100);
+	color: var(--teal-500);
+}
+
+/* Kapsuła z logotypu: w znaku NTC ANDAR człon "NTC" siedzi w obrysie
+   przechodzącym od granatu do turkusu, w środku pusto. Przycisk kontaktu
+   powtarza ten sam zabieg, więc pasek czyta się jak jedna kompozycja: znak
+   po lewej, jego echo po prawej. Obrys w gradiencie robimy dwoma tłami -
+   jasne wypełnienie w padding-box, gradient w border-box. */
+.nav-cta {
+	--ntc-mark-start: #1f296e;
+	--ntc-mark-end: #049899;
+
+	color: var(--ntc-mark-start) !important;
+	padding: 10px 26px;
+	/* Podkreślenie zostało po domyślnym stylu odnośnika i na wypełnionym
+	   przycisku dało się przeoczyć. W obrysowanej kapsule wygląda jak błąd. */
+	text-decoration: none;
+	border: 2px solid transparent;
+	border-radius: 100px;
+	background:
+		linear-gradient(#fff, #fff) padding-box,
+		linear-gradient(90deg, var(--ntc-mark-start), var(--ntc-mark-end)) border-box;
+	font-weight: 700 !important;
+	letter-spacing: 0.1em !important;
+	text-transform: uppercase !important;
+	font-size: 12px !important;
+	transition: transform 0.15s, box-shadow 0.15s, color 0.15s, background 0.15s !important;
+}
+
+.nav-cta:hover {
+	color: #fff !important;
+	background:
+		linear-gradient(90deg, var(--ntc-mark-start), var(--ntc-mark-end)) padding-box,
+		linear-gradient(90deg, var(--ntc-mark-start), var(--ntc-mark-end)) border-box;
+	transform: translateY(-2px);
+	box-shadow: 0 8px 28px rgba(31, 41, 110, 0.25);
+}
+
+.nav-lang {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 13px !important;
+	font-weight: 500 !important;
+	color: rgba(255, 255, 255, 0.7) !important;
+	cursor: pointer;
+	transition: color 0.2s, border-color 0.2s;
+	border: 1px solid rgba(255, 255, 255, 0.25);
+	border-radius: 100px;
+	padding: 4px 12px;
+	text-transform: none !important;
+	letter-spacing: 0.02em !important;
+	text-decoration: none;
+}
+
+.nav.scrolled .nav-lang,
+.nav--solid .nav-lang {
+	color: #2a4a62 !important;
+	border-color: #cdd8e0;
+}
+
+.nav-lang:hover {
+	color: var(--teal-500) !important;
+	border-color: var(--teal-500);
+}
+
+.nav-lang-flag {
+	font-size: 14px;
+	line-height: 1;
+}
+
+/* Przycisk menu - widoczny dopiero poniżej 600px, patrz media query na dole. */
+.nav-toggle {
+	display: none;
+	width: 44px;
+	height: 44px;
+	padding: 12px 10px;
+	background: transparent;
+	border: 1px solid rgba(255, 255, 255, 0.25);
+	border-radius: 12px;
+	cursor: pointer;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.nav.scrolled .nav-toggle,
+.nav--solid .nav-toggle {
+	border-color: #cdd8e0;
+}
+
+.nav-toggle-bar {
+	display: block;
+	height: 2px;
+	width: 100%;
+	background: #fff;
+	border-radius: 2px;
+	transition: background 0.3s, transform 0.25s, opacity 0.2s;
+}
+
+.nav.scrolled .nav-toggle-bar,
+.nav--solid .nav-toggle-bar {
+	background: #2a4a62;
+}
+
+.nav.open .nav-toggle-bar:nth-child(1) {
+	transform: translateY(9px) rotate(45deg);
+}
+
+.nav.open .nav-toggle-bar:nth-child(2) {
+	opacity: 0;
+}
+
+.nav.open .nav-toggle-bar:nth-child(3) {
+	transform: translateY(-9px) rotate(-45deg);
+}
+
+/* Wariant uproszczony - kontakt. */
+.nav-back {
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	color: var(--slate-500);
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 16px;
+	border-radius: 100px;
+	border: 1.5px solid #cdd8e0;
+	transition: border-color 0.2s, color 0.2s;
+}
+
+.nav-back:hover {
+	border-color: var(--teal-500);
+	color: var(--teal-500);
+}
+
+/* --------------------------------------------------------------- przyciski */
+
+.btn-primary {
+	background: linear-gradient(135deg, var(--teal-500), var(--teal-600));
+	color: #fff;
+	padding: 13px 28px;
+	border-radius: 100px;
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	border: none;
+	cursor: pointer;
+	text-decoration: none;
+	display: inline-block;
+	transition: transform 0.15s, box-shadow 0.15s;
+	box-shadow: 0 4px 20px rgba(27, 191, 168, 0.35);
+}
+
+.btn-primary:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 32px rgba(27, 191, 168, 0.45);
+}
+
+.btn-outline {
+	background: transparent;
+	color: rgba(255, 255, 255, 0.9);
+	padding: 12px 28px;
+	border-radius: 100px;
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	border: 1.5px solid rgba(255, 255, 255, 0.35);
+	cursor: pointer;
+	text-decoration: none;
+	display: inline-block;
+	transition: border-color 0.2s, color 0.2s;
+}
+
+.btn-outline:hover {
+	border-color: var(--teal-500);
+	color: var(--teal-500);
+}
+
+/* -------------------------------------------------------- hero strony głównej */
+
+.hero {
+	min-height: 36vh;
+	/* Kąt odwrócony względem projektu: 135deg prowadził najciemniejszy granat
+	   dokładnie w lewy górny róg, czyli pod logotyp, a ten jest granatowy
+	   (#1f296e). Ciemne na ciemnym. Teraz w tym rogu kończy się jasny turkus,
+	   a granat schodzi w prawy dół, gdzie nie ma nad nim żadnej treści. */
+	background: linear-gradient(315deg, #082235 0%, #0b3550 34%, #0d5068 62%, #0d7a6e 84%, #16b997 100%);
+	position: relative;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+}
+
+/*
+ * Półkola z projektu zostają wyłącznie po prawej, przy miejscu na zdjęcie.
+ * Rozciągnięte na cały hero wchodziły w siatkę połączeń i oba motywy się
+ * zagryzały: łuki przecinały linie siatki pod przypadkowymi kątami. Po prawej
+ * grają rolę oprawy zdjęcia, po lewej pole zostaje dla siatki i tytułu.
+ */
+.hero-bg-lines {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: -6%;
+	left: auto;
+	width: 58%;
+	pointer-events: none;
+	opacity: 0.12;
+	/* Miękkie wejście od lewej, żeby nie było widać, gdzie kadr się urywa. */
+	-webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
+	mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
+
+	/* Ta sama animacja i to samo tempo co siatka. Hero to jedyne miejsce, gdzie
+	   w jednym kadrze leżą dwa motywy dekoracyjne. Gdy rusza się tylko jeden,
+	   widać dokładnie to, co przy rozjeżdżaniu linii i kropek: część obrazu
+	   płynie, część stoi. Wspólne keyframes i wspólny czas trwania trzymają je
+	   w jednym rytmie, bo obie animacje startują razem z załadowaniem strony. */
+	transform: scale(1.12);
+	animation: ntc-mesh-drift 30s ease-in-out infinite alternate;
+	will-change: transform;
+}
+
+.hero-inner {
+	max-width: var(--wrap);
+	margin: 0 auto;
+	/* 130 px od góry, bo biały pasek ma teraz 110 px i przykrywa treść.
+	   Wcześniej był przezroczysty i hero mógł zaczynać się wyżej. */
+	padding: 130px var(--gutter) 20px;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 60px;
+	align-items: center;
+	position: relative;
+	z-index: 2;
+}
+
+.hero-badge {
+	display: inline-block;
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--teal-500);
+	margin-bottom: 20px;
+}
+
+.hero-title {
+	font-family: var(--font-display);
+	font-size: clamp(28px, 3.5vw, 44px);
+	line-height: 1.12;
+	color: #fff;
+	margin-bottom: 20px;
+	font-weight: 700;
+}
+
+/* Wariant nagłówka dla podstron: niższy pas, treść dosunięta do dołu, jedna
+   kolumna zamiast dwóch. Mieszkał w oferta.css, ale używa go też blog, który
+   tamtego arkusza nie wczytuje - bez tego tytuł rozjeżdżał się na dwie kolumny
+   siatki ze strony głównej. */
+.hero--sub {
+	min-height: 52vh;
+	align-items: flex-end;
+}
+
+.hero--sub .hero-bg-lines {
+	opacity: 0.1;
+}
+
+.hero--sub .hero-inner {
+	display: block;
+	width: 100%;
+	/* Zapas na biały pasek (110 px) plus oddech nad tytułem. */
+	padding: 150px var(--gutter) 0;
+}
+
+/* Okruszki siedzą nad nadtytułem, w ciemnym pasie, więc jadą na jasnej
+   przezroczystości zamiast na kolorze tekstu z jasnych sekcji. */
+.okruszki {
+	margin-bottom: 18px;
+}
+
+.okruszki-lista {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-size: 13px;
+}
+
+.okruszki-krok {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: rgba(255, 255, 255, 0.55);
+}
+
+.okruszki-krok a {
+	color: rgba(255, 255, 255, 0.7);
+	text-decoration: none;
+	border-bottom: 1px solid transparent;
+	transition: color 0.2s, border-color 0.2s;
+}
+
+.okruszki-krok a:hover {
+	color: var(--teal-400);
+	border-bottom-color: var(--teal-400);
+}
+
+.okruszki-krok [aria-current="page"] {
+	color: rgba(255, 255, 255, 0.85);
+}
+
+.okruszki-sep {
+	color: rgba(255, 255, 255, 0.3);
+}
+
+.hero--sub .hero-badge {
+	color: var(--teal-400);
+	letter-spacing: 0.14em;
+	margin-bottom: 16px;
+}
+
+.hero--sub .hero-title {
+	font-size: clamp(32px, 4vw, 56px);
+	font-weight: 800;
+	line-height: 1.1;
+	margin-bottom: 16px;
+}
+
+.hero--sub .hero-sub {
+	font-size: 16px;
+	line-height: 1.65;
+	color: rgba(255, 255, 255, 0.65);
+	max-width: 520px;
+	margin-bottom: 40px;
+}
+
+.hero-title em {
+	font-style: italic;
+	color: var(--teal-400);
+}
+
+.hero-sub {
+	font-size: 15px;
+	line-height: 1.6;
+	color: rgba(255, 255, 255, 0.7);
+	margin-bottom: 28px;
+	max-width: 380px;
+}
+
+.hero-btns {
+	display: flex;
+	gap: 14px;
+	flex-wrap: wrap;
+}
+
+.hero-image-wrap {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.hero-blob {
+	overflow: visible;
+	filter: drop-shadow(0 16px 48px rgba(27, 191, 168, 0.30));
+}
+
+/* Pierścienie wokół zdjęcia pulsują, nie obracają się - tak wyszło z iteracji
+   w czacie. Każdy ma inny czas i opóźnienie, żeby ruch nie był zgrany w takt.
+   transform-origin liczony ręcznie (210,210), bo to środek krzywej bloba w
+   układzie viewBox, a nie środek pudełka SVG. */
+@keyframes ntc-ring-1 {
+	0%, 100% { transform: translate(210px, 210px) scale(1.28) translate(-210px, -210px); opacity: 0.35; }
+	50%      { transform: translate(210px, 210px) scale(1.34) translate(-210px, -210px); opacity: 0.70; }
+}
+
+@keyframes ntc-ring-2 {
+	0%, 100% { transform: translate(210px, 210px) scale(1.18) translate(-210px, -210px); opacity: 0.45; }
+	50%      { transform: translate(210px, 210px) scale(1.23) translate(-210px, -210px); opacity: 0.85; }
+}
+
+@keyframes ntc-ring-3 {
+	0%, 100% { transform: translate(210px, 210px) scale(1.09) translate(-210px, -210px); opacity: 0.55; }
+	50%      { transform: translate(210px, 210px) scale(1.13) translate(-210px, -210px); opacity: 1; }
+}
+
+@keyframes ntc-ring-4 {
+	0%, 100% { transform: translate(210px, 210px) scale(1.03) translate(-210px, -210px); opacity: 0.65; }
+	50%      { transform: translate(210px, 210px) scale(1.06) translate(-210px, -210px); opacity: 1; }
+}
+
+.blob-ring-1 { animation: ntc-ring-1 6s   ease-in-out infinite;        }
+.blob-ring-2 { animation: ntc-ring-2 5s   ease-in-out 0.4s infinite;   }
+.blob-ring-3 { animation: ntc-ring-3 4s   ease-in-out 0.8s infinite;   }
+.blob-ring-4 { animation: ntc-ring-4 3.2s ease-in-out 0.2s infinite;   }
+
+/* ----------------------------------------------------- wspólne bloki sekcji */
+
+.section {
+	padding: var(--odstep-sekcji) 0;
+}
+
+.section-inner {
+	max-width: var(--wrap);
+	margin: 0 auto;
+	padding: 0 var(--gutter);
+}
+
+.section-label {
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--teal-500);
+	margin-bottom: 14px;
+}
+
+.section-title {
+	font-family: var(--font-display);
+	font-size: clamp(32px, 4vw, 52px);
+	font-weight: 600;
+	line-height: 1.15;
+	letter-spacing: -0.01em;
+	color: var(--navy-700);
+	margin-bottom: 20px;
+}
+
+.section-title em {
+	font-style: italic;
+	font-weight: 500;
+	color: var(--teal-500);
+}
+
+.section-sub {
+	font-size: 17px;
+	line-height: 1.7;
+	color: var(--slate-500);
+	max-width: 600px;
+}
+
+/* ---------------------------------------------------------------- o nas */
+
+.about {
+	background: #fff;
+}
+
+.about-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 80px;
+	align-items: center;
+}
+
+.about-image-wrap {
+	position: relative;
+}
+
+.about-img {
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	object-fit: cover;
+	border-radius: 24px;
+	display: block;
+}
+
+.about-accent-card {
+	position: absolute;
+	bottom: -24px;
+	right: -24px;
+	background: var(--navy-700);
+	border-radius: 16px;
+	padding: 20px 28px;
+	box-shadow: 0 12px 40px rgba(11, 42, 66, 0.2);
+}
+
+.about-accent-num {
+	font-family: var(--font-display);
+	font-size: 40px;
+	color: var(--teal-500);
+	line-height: 1;
+}
+
+.about-accent-txt {
+	font-size: 13px;
+	color: rgba(255, 255, 255, 0.65);
+	margin-top: 4px;
+}
+
+.about-body .section-sub {
+	margin-bottom: 24px;
+}
+
+.about-body .section-sub + .section-sub {
+	font-size: 15px;
+	margin-bottom: 36px;
+}
+
+.about-figures {
+	display: flex;
+	gap: 40px;
+}
+
+.about-figure-num {
+	font-family: var(--font-display);
+	font-size: 32px;
+	color: var(--teal-500);
+}
+
+.about-figure-label {
+	font-size: 13px;
+	color: var(--slate-500);
+	margin-top: 4px;
+}
+
+/* ------------------------------------------------------- co nas wyróżnia */
+
+.why {
+	background: linear-gradient(160deg, #082235 0%, #0b3a55 50%, #0d5068 100%);
+}
+
+.why .section-title {
+	color: #fff;
+}
+
+.why .section-label {
+	color: var(--teal-400);
+}
+
+.why-head {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 60px;
+	align-items: start;
+}
+
+.why-intro {
+	font-size: 17px;
+	line-height: 1.7;
+	color: rgba(255, 255, 255, 0.55);
+	max-width: 600px;
+	padding-top: 48px;
+}
+
+.features-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 24px;
+	margin-top: 56px;
+}
+
+/* Trzy kafelki mieszczą się w jednym rzędzie. Przy sztywnych dwóch kolumnach
+   trzeci schodził niżej i pół rzędu zostawało puste. */
+.features-grid:has(> :nth-child(3):last-child) {
+	grid-template-columns: repeat(3, 1fr);
+}
+
+.feature-card {
+	background: rgba(255, 255, 255, 0.06);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 20px;
+	padding: 36px;
+	transition: background 0.3s, border-color 0.3s, transform 0.2s;
+}
+
+.feature-card:hover {
+	background: rgba(27, 191, 168, 0.1);
+	border-color: rgba(27, 191, 168, 0.35);
+	transform: translateY(-4px);
+}
+
+.feature-icon {
+	width: 52px;
+	height: 52px;
+	border-radius: 14px;
+	background: linear-gradient(135deg, rgba(27, 191, 168, 0.25), rgba(12, 168, 130, 0.15));
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 20px;
+	color: var(--teal-400);
+}
+
+.feature-icon svg {
+	width: 26px;
+	height: 26px;
+}
+
+.feature-title {
+	font-size: 20px;
+	font-weight: 700;
+	color: #fff;
+	margin-bottom: 12px;
+}
+
+.feature-text {
+	font-size: 15px;
+	line-height: 1.7;
+	color: rgba(255, 255, 255, 0.55);
+}
+
+/* Kafelek z wyliczeniem - kropki w kolorze marki, żeby lista nie wyglądała
+   jak domyślna lista przeglądarki wrzucona w ciemną kartę. */
+.feature-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.feature-list li {
+	position: relative;
+	padding-left: 20px;
+}
+
+.feature-list li + li {
+	margin-top: 12px;
+}
+
+.feature-list li::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 11px;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--teal-400);
+}
+
+/* ------------------------------------------------- oferta na stronie głównej */
+
+.offer {
+	background: var(--ice-100);
+}
+
+.offer-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-end;
+	flex-wrap: wrap;
+	gap: 24px;
+}
+
+.offer-head .section-title {
+	margin-bottom: 0;
+}
+
+.offer-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 24px;
+	margin-top: 56px;
+}
+
+.offer-card {
+	background: #fff;
+	border-radius: 20px;
+	overflow: hidden;
+	box-shadow: 0 2px 20px rgba(11, 42, 66, 0.07);
+	transition: transform 0.2s, box-shadow 0.2s;
+	display: flex;
+	flex-direction: column;
+}
+
+.offer-card:hover {
+	transform: translateY(-6px);
+	box-shadow: 0 12px 40px rgba(11, 42, 66, 0.14);
+}
+
+.offer-card-img {
+	height: 180px;
+	position: relative;
+	overflow: hidden;
+	background: linear-gradient(135deg, #e0f0ee, #c8e6df);
+}
+
+.offer-card-img img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.offer-card-body {
+	padding: 28px;
+}
+
+.offer-card-tag {
+	display: inline-block;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--teal-500);
+	background: rgba(27, 191, 168, 0.1);
+	border-radius: 100px;
+	padding: 4px 12px;
+	margin-bottom: 12px;
+}
+
+.offer-card-title {
+	font-size: 20px;
+	font-weight: 700;
+	color: var(--navy-700);
+	margin-bottom: 10px;
+}
+
+.offer-card-text {
+	font-size: 14px;
+	line-height: 1.65;
+	color: var(--slate-500);
+}
+
+.offer-card-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 13px;
+	font-weight: 700;
+	color: var(--teal-500);
+	margin-top: 18px;
+	text-decoration: none;
+	letter-spacing: 0.04em;
+	transition: gap 0.2s;
+}
+
+.offer-card:hover .offer-card-link {
+	gap: 10px;
+}
+
+/* ------------------------------------------------------------- statystyki */
+
+.stats {
+	background: linear-gradient(135deg, #0d5068 0%, #0b7c6e 50%, #0a9678 100%);
+	padding: 80px 0;
+}
+
+.stats-inner {
+	max-width: var(--wrap);
+	margin: 0 auto;
+	padding: 0 var(--gutter);
+}
+
+.stats-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+}
+
+.stat-item {
+	text-align: center;
+	padding: 40px 20px;
+	border-right: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.stat-item:last-child {
+	border-right: none;
+}
+
+.stat-num {
+	font-family: var(--font-display);
+	font-size: 56px;
+	color: #fff;
+	line-height: 1;
+	margin-bottom: 8px;
+}
+
+.stat-plus {
+	color: var(--teal-400);
+}
+
+.stat-label {
+	font-size: 14px;
+	color: rgba(255, 255, 255, 0.65);
+	line-height: 1.4;
+	/* Etykiety mają twardy podział wiersza zapisany jako \n w słowniku. */
+	white-space: pre-line;
+}
+
+/* ------------------------------------------------------- karuzela klientów */
+
+.carousel-section {
+	background: var(--ice-100);
+	padding: 48px 0;
+	overflow: hidden;
+	border-top: 1px solid var(--line-100);
+	border-bottom: 1px solid var(--line-100);
+}
+
+.carousel-label {
+	text-align: center;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--slate-400);
+	margin-bottom: 32px;
+}
+
+.carousel-track-wrap {
+	overflow: hidden;
+	position: relative;
+}
+
+.carousel-track-wrap::before,
+.carousel-track-wrap::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 120px;
+	z-index: 2;
+	pointer-events: none;
+}
+
+.carousel-track-wrap::before {
+	left: 0;
+	background: linear-gradient(to right, var(--ice-100), transparent);
+}
+
+.carousel-track-wrap::after {
+	right: 0;
+	background: linear-gradient(to left, var(--ice-100), transparent);
+}
+
+.carousel-track {
+	display: flex;
+	gap: 28px;
+	align-items: center;
+	width: max-content;
+	/* 28 s wystarczało przy dwunastu nazwami tekstem. Przy trzydziestu
+	   logotypach oko nie nadąża przeczytać, więc taśma zwalnia ponad trzykrotnie.
+	   Zatrzymuje się na najechanie, żeby dało się obejrzeć konkretny znak. */
+	animation: ntc-carousel 95s linear infinite;
+}
+
+.carousel-track:hover {
+	animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.carousel-track {
+		animation: none;
+	}
+}
+
+@keyframes ntc-carousel {
+	0%   { transform: translateX(0); }
+	100% { transform: translateX(-50%); }
+}
+
+/* Jedna ramka dla wszystkich znaków. Logotypy dostawców przychodzą w bardzo
+   różnych proporcjach i część z nich ma wtopione białe tło - bez wspólnej,
+   białej ramki takie znaki czytały się na jasnym pasie jako białe prostokąty,
+   a reszta miała ramki różnej szerokości. Stały rozmiar plus wyśrodkowanie
+   załatwia jedno i drugie. */
+.carousel-logo {
+	box-sizing: border-box;
+	width: 200px;
+	height: 104px;
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: var(--font-display);
+	font-size: 16px;
+	font-weight: 700;
+	color: #2a4a62;
+	letter-spacing: 0.04em;
+	white-space: nowrap;
+	padding: 18px 24px;
+	border: 1.5px solid #cdd8e4;
+	border-radius: 16px;
+	background: #fff;
+	transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.carousel-logo:hover {
+	border-color: var(--teal-400);
+	box-shadow: 0 6px 20px rgba(11, 42, 66, 0.08);
+}
+
+/* ------------------------------------------------------------ jak działamy */
+
+.how {
+	background: #fff;
+}
+
+.how-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 80px;
+	align-items: center;
+}
+
+.how-intro .section-sub {
+	margin-bottom: 32px;
+}
+
+.how-steps {
+	display: flex;
+	flex-direction: column;
+	/* Numery kroków rysuje licznik CSS - patrz .how-step-num. */
+	counter-reset: ntc-step;
+}
+
+.how-step {
+	display: flex;
+	gap: 24px;
+	align-items: flex-start;
+	padding: 24px 0;
+	border-bottom: 1px solid #eaf0f4;
+}
+
+.how-step:last-child {
+	border-bottom: none;
+}
+
+.how-step-num {
+	flex-shrink: 0;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, var(--teal-500), var(--teal-600));
+	color: #fff;
+	font-size: 14px;
+	font-weight: 700;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 4px 16px rgba(27, 191, 168, 0.3);
+}
+
+.how-step-num::before {
+	counter-increment: ntc-step;
+	content: counter(ntc-step);
+}
+
+.how-step-title {
+	font-size: 17px;
+	font-weight: 700;
+	color: var(--navy-700);
+	margin-bottom: 6px;
+}
+
+.how-step-text {
+	font-size: 14px;
+	line-height: 1.65;
+	color: var(--slate-500);
+}
+
+/* ------------------------------------------- sekcja kontaktowa strony głównej */
+
+.contact {
+	background: linear-gradient(160deg, #082235 0%, #0b3a55 40%, #0d5a6e 100%);
+}
+
+.contact .section-title {
+	color: #fff;
+}
+
+.contact-head {
+	text-align: center;
+	margin-bottom: 60px;
+}
+
+.contact-head .section-label {
+	color: var(--teal-400);
+}
+
+.contact-head-sub {
+	color: rgba(255, 255, 255, 0.5);
+	font-size: 17px;
+	max-width: 540px;
+	margin: 0 auto;
+	line-height: 1.6;
+}
+
+.contact-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 80px;
+	align-items: center;
+}
+
+.contact-blob-wrap {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.contact-blob {
+	width: 380px;
+	height: 380px;
+	position: relative;
+}
+
+.contact-blob-shape {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(135deg, rgba(27, 191, 168, 0.2), rgba(12, 168, 130, 0.1));
+	border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
+	border: 1.5px solid rgba(27, 191, 168, 0.25);
+}
+
+.contact-blob-shape-2 {
+	position: absolute;
+	inset: -16px;
+	border-radius: 45% 55% 40% 60% / 55% 40% 60% 45%;
+	border: 1px solid rgba(27, 191, 168, 0.12);
+}
+
+.contact-blob-img {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 300px;
+	height: 300px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, #0d6278, var(--teal-600));
+	overflow: hidden;
+}
+
+.contact-blob-img img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: 50%;
+	display: block;
+}
+
+.contact-form {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+/* Formularz na ciemnym tle - wariant na stronie głównej. Odpowiednik na jasnym
+   tle (podstrona kontakt) siedzi w kontakt.css. */
+.contact .form-input {
+	background: rgba(255, 255, 255, 0.08);
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	border-radius: 12px;
+	padding: 14px 18px;
+	font-family: var(--font-body);
+	font-size: 15px;
+	color: #fff;
+	outline: none;
+	transition: border-color 0.2s, background 0.2s;
+	width: 100%;
+}
+
+.contact .form-input::placeholder {
+	color: rgba(255, 255, 255, 0.4);
+}
+
+.contact .form-input:focus {
+	border-color: var(--teal-500);
+	background: rgba(27, 191, 168, 0.08);
+}
+
+.contact textarea.form-input {
+	min-height: 110px;
+	resize: vertical;
+}
+
+.contact .form-consent {
+	display: flex;
+	gap: 10px;
+	align-items: flex-start;
+	font-size: 12px;
+	line-height: 1.5;
+	color: rgba(255, 255, 255, 0.45);
+	cursor: pointer;
+}
+
+.form-consent input {
+	margin-top: 2px;
+	accent-color: var(--teal-500);
+	flex-shrink: 0;
+}
+
+.form-submit {
+	background: linear-gradient(135deg, var(--teal-500), var(--teal-600));
+	color: #fff;
+	border: none;
+	border-radius: 100px;
+	padding: 15px 36px;
+	font-family: var(--font-body);
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition: transform 0.15s, box-shadow 0.15s;
+	box-shadow: 0 4px 20px rgba(27, 191, 168, 0.35);
+}
+
+.contact .form-submit {
+	width: 100%;
+}
+
+.form-submit:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 32px rgba(27, 191, 168, 0.45);
+}
+
+/* Potwierdzenie wysyłki - podmieniane przez main.js, w HTML-u siedzi ukryte. */
+.contact .form-sent {
+	background: rgba(27, 191, 168, 0.15);
+	border: 1.5px solid rgba(27, 191, 168, 0.4);
+	border-radius: 20px;
+	padding: 40px;
+	text-align: center;
+}
+
+.contact .form-sent-check {
+	font-size: 40px;
+	margin-bottom: 16px;
+	color: var(--teal-400);
+}
+
+.contact .form-sent-title {
+	color: #fff;
+	font-size: 20px;
+	font-weight: 700;
+	margin-bottom: 8px;
+}
+
+.contact .form-sent-text {
+	color: rgba(255, 255, 255, 0.55);
+	font-size: 15px;
+}
+
+[hidden] {
+	display: none !important;
+}
+
+.contact-details {
+	margin-top: 32px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.contact-detail {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	font-size: 14px;
+	color: rgba(255, 255, 255, 0.5);
+	text-decoration: none;
+}
+
+a.contact-detail:hover {
+	color: var(--teal-400);
+}
+
+.contact-detail svg {
+	width: 18px;
+	height: 18px;
+	flex-shrink: 0;
+	color: var(--teal-400);
+}
+
+/* Adnotacja, że formularz jest na razie makietą - do usunięcia razem z
+   podpięciem prawdziwej wysyłki. */
+.form-demo-notice {
+	font-size: 12px;
+	line-height: 1.5;
+	color: rgba(255, 255, 255, 0.4);
+	margin-top: 4px;
+}
+
+/* -------------------------------------------------------------------- stopka */
+
+.footer {
+	background: var(--navy-900);
+	padding: 60px 0 30px;
+}
+
+.footer--slim {
+	padding: 40px 0;
+}
+
+.footer-inner {
+	max-width: var(--wrap);
+	margin: 0 auto;
+	padding: 0 var(--gutter);
+}
+
+.footer--slim .footer-inner {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 16px;
+}
+
+.footer-grid {
+	display: grid;
+	grid-template-columns: 2fr 1fr 1fr 1fr;
+	gap: 60px;
+	margin-bottom: 60px;
+}
+
+.footer-logo-txt {
+	font-family: var(--font-display);
+	font-size: 20px;
+	font-weight: 700;
+	color: #fff;
+	margin-bottom: 16px;
+}
+
+.footer-desc {
+	font-size: 14px;
+	line-height: 1.7;
+	color: rgba(255, 255, 255, 0.4);
+	max-width: 280px;
+}
+
+.footer-heading {
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 0.5);
+	margin-bottom: 18px;
+}
+
+.footer-links {
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.footer-links a {
+	font-size: 14px;
+	color: rgba(255, 255, 255, 0.55);
+	text-decoration: none;
+	transition: color 0.2s;
+}
+
+.footer-links a:hover {
+	color: var(--teal-500);
+}
+
+.footer-contact-item {
+	font-size: 14px;
+	color: rgba(255, 255, 255, 0.55);
+	margin-bottom: 10px;
+	line-height: 1.5;
+}
+
+.footer-contact-item a {
+	color: rgba(255, 255, 255, 0.55);
+	text-decoration: none;
+}
+
+.footer-contact-item a:hover {
+	color: var(--teal-500);
+}
+
+.footer-contact-item--fine {
+	margin-top: 4px;
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.3);
+}
+
+.footer-bottom {
+	border-top: 1px solid rgba(255, 255, 255, 0.08);
+	padding-top: 28px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 16px;
+}
+
+.footer-copy {
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.3);
+}
+
+.footer--slim .footer-copy {
+	color: rgba(255, 255, 255, 0.4);
+}
+
+.footer-legal {
+	display: flex;
+	gap: 24px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.footer-legal a {
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.3);
+	text-decoration: none;
+	transition: color 0.2s;
+}
+
+.footer--slim .footer-legal a {
+	color: rgba(255, 255, 255, 0.4);
+}
+
+.footer-legal a:hover {
+	color: var(--teal-500);
+}
+
+/* ------------------------------------------------------------------ 404 */
+
+.error-page {
+	min-height: 70vh;
+	display: flex;
+	align-items: center;
+	background: linear-gradient(160deg, #082235 0%, #0b3a55 50%, #0d5068 100%);
+	text-align: center;
+}
+
+.error-page .section-inner {
+	max-width: 640px;
+}
+
+.error-page .section-title {
+	color: #fff;
+}
+
+.error-page p {
+	font-size: 17px;
+	line-height: 1.7;
+	color: rgba(255, 255, 255, 0.6);
+	margin-bottom: 32px;
+}
+
+/* -------------------------------------------------------------- responsywność */
+
+@media (max-width: 900px) {
+	.hero-inner,
+	.about-grid,
+	.how-grid,
+	.contact-grid,
+	.why-head {
+		grid-template-columns: 1fr;
+	}
+
+	.why-head {
+		gap: 24px;
+	}
+
+	.why-intro {
+		padding-top: 0;
+	}
+
+	.features-grid,
+	.offer-grid,
+	.footer-grid {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.hero-image-wrap {
+		display: none;
+	}
+
+	.stats-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	.stat-item {
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
+	.stat-item:nth-child(2n) {
+		border-right: none;
+	}
+
+	.stat-item:nth-last-child(-n+2) {
+		border-bottom: none;
+	}
+
+	.about-accent-card {
+		right: 0;
+	}
+
+	.contact-blob {
+		width: 300px;
+		height: 300px;
+	}
+
+	.contact-blob-img {
+		width: 240px;
+		height: 240px;
+	}
+}
+
+@media (max-width: 600px) {
+	:root {
+		--gutter: 20px;
+	}
+
+	.features-grid,
+	.offer-grid,
+	.stats-grid,
+	.footer-grid {
+		grid-template-columns: 1fr;
+	}
+
+	/* Menu zjeżdża w panel pod paskiem. W prototypie na tej szerokości po
+	   prostu znikało - bez przycisku nie było jak dojść do oferty i kontaktu. */
+	.nav-toggle {
+		display: flex;
+	}
+
+	.nav-menu {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		right: 0;
+		flex-direction: column;
+		align-items: stretch;
+		gap: 0;
+		background: rgba(255, 255, 255, 0.98);
+		box-shadow: 0 12px 32px rgba(11, 42, 66, 0.14);
+		padding: 8px 20px 16px;
+		display: none;
+	}
+
+	.nav.open .nav-menu {
+		display: flex;
+	}
+
+	.nav-links {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 0;
+	}
+
+	.nav-links li {
+		border-bottom: 1px solid var(--line-100);
+	}
+
+	.nav-links a,
+	.nav.scrolled .nav-links a,
+	.nav--solid .nav-links a {
+		display: block;
+		padding: 14px 0;
+		color: #2a4a62;
+	}
+
+	/* W panelu mobilnym lista rozwija się w miejscu, a nie nad treścią - na
+	   telefonie nie ma gdzie wyświetlić chmurki obok. */
+	.nav-links .sub-menu {
+		position: static;
+		min-width: 0;
+		padding: 0 0 8px;
+		border-radius: 0;
+		box-shadow: none;
+		background: transparent;
+		opacity: 1;
+		visibility: visible;
+		transform: none;
+		display: none;
+	}
+
+	.nav-links .menu-item-has-children::after {
+		content: none;
+	}
+
+	.nav-links .menu-item-has-children.open > .sub-menu {
+		display: block;
+		transform: none;
+	}
+
+	.nav-links .sub-menu li {
+		border-bottom: none;
+	}
+
+	.nav-links .sub-menu a,
+	.nav.scrolled .nav-links .sub-menu a,
+	.nav--solid .nav-links .sub-menu a {
+		padding: 9px 0 9px 16px;
+		border-left: 2px solid var(--line-100);
+	}
+
+	.nav-extra {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 10px;
+		margin-top: 14px;
+	}
+
+	.nav-cta,
+	.nav.scrolled .nav-cta,
+	.nav--solid .nav-cta {
+		text-align: center;
+	}
+
+	.nav-lang,
+	.nav.scrolled .nav-lang,
+	.nav--solid .nav-lang {
+		color: #2a4a62 !important;
+		border-color: #cdd8e0;
+		justify-content: center;
+	}
+
+	.section {
+		--odstep-sekcji: 64px;
+
+		padding: var(--odstep-sekcji) 0;
+	}
+
+	.hero-title {
+		font-size: 36px;
+	}
+
+	.stat-item {
+		border-right: none;
+	}
+
+	.about-figures {
+		gap: 28px;
+	}
+}
+
+/* ==========================================================================
+ * Siatka połączeń z identyfikacji wizualnej
+ *
+ * Motyw kropek połączonych liniami, ten sam co w materiałach drukowanych.
+ * SVG generuje PHP (ntc_mesh), a kolor bierze się z currentColor - dzięki temu
+ * jedna funkcja obsługuje biały wariant na granacie i szary na bieli.
+ * ========================================================================== */
+
+.ntc-mesh {
+	/* Krycie idzie zmienną, a nie stylem inline, żeby dało się je nadpisać
+	   z arkusza dla konkretnej sekcji bez !important. */
+	opacity: var(--mesh-opacity, 1);
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	/* Warstwa dekoracyjna zostaje pod treścią. */
+	z-index: 0;
+
+	/* Powiększenie na starcie daje zapas na przesuwanie - bez niego przy
+	   dryfie odsłoniłaby się pusta krawędź kadru. */
+	transform: scale(1.12);
+	animation: ntc-mesh-drift 30s ease-in-out infinite alternate,
+		ntc-mesh-breathe 21s ease-in-out infinite alternate;
+	will-change: transform, opacity;
+}
+
+/*
+ * Linie i kropki nie ruszają się niezależnie. Próbowałem tego dla lepszej
+ * czytelności ruchu, ale w siatce połączeń linia łączy dwie konkretne kropki -
+ * przesunięcie jednej warstwy względem drugiej odrywa końce linii od punktów
+ * i rysunek się rozspaja. Rusza się cały SVG albo nic.
+ *
+ * Grupy zostają, bo zbierają kubełki krycia w jedną warstwę do złożenia.
+ */
+
+/*
+ * Ruch ma być na granicy zauważalności: pełny cykl trwa ponad minutę, a punkt
+ * przesuwa się o ułamek szerokości kadru. Chodzi o to, żeby siatka "oddychała"
+ * przy dłuższym patrzeniu, a nie żeby przyciągała wzrok i odciągała go od
+ * treści. Animujemy wyłącznie transform i opacity, czyli rzeczy, które
+ * przeglądarka robi na karcie graficznej bez przeliczania układu strony.
+ */
+/*
+ * Cały kadr płynie i minimalnie się obraca. Obrót jest tu ważniejszy niż
+ * przesunięcie: przy samym przesuwaniu oko nie ma punktu odniesienia i ruch
+ * ginie, a pół stopnia obrotu widać na krawędziach, gdzie punkty rozjeżdżają
+ * się względem brzegu sekcji. Siatka zostaje przy tym sztywna - wszystko jedzie
+ * razem, bo to jedna transformacja na jednym elemencie.
+ */
+@keyframes ntc-mesh-drift {
+	from {
+		transform: scale(1.12) translate3d(-2%, -1.2%, 0) rotate(-0.45deg);
+	}
+
+	to {
+		transform: scale(1.12) translate3d(2.4%, 1.4%, 0) rotate(0.5deg);
+	}
+}
+
+@keyframes ntc-mesh-breathe {
+	from {
+		opacity: calc(var(--mesh-opacity, 1) * 0.7);
+	}
+
+	to {
+		opacity: var(--mesh-opacity, 1);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ntc-mesh,
+	.hero-bg-lines {
+		animation: none;
+		transform: none;
+	}
+}
+
+/* Ciemne tła: siatka biała, ledwo widoczna, ma być teksturą, nie ilustracją. */
+.ntc-mesh--hero,
+.ntc-mesh--band {
+	color: #fff;
+}
+
+/* Jasne tła: szarość identyfikacji, wygaszana ku środkowi kadru, żeby tekst
+   nad nią czytał się bez wysiłku. Maska zamiast niższego krycia - inaczej
+   kropki przy krawędzi też by zbladły i motyw by zniknął. */
+.ntc-mesh--corner {
+	color: var(--slate-400);
+	-webkit-mask-image: linear-gradient(105deg, #000 0%, rgba(0, 0, 0, 0.35) 42%, transparent 68%);
+	mask-image: linear-gradient(105deg, #000 0%, rgba(0, 0, 0, 0.35) 42%, transparent 68%);
+}
+
+/* Sekcje niosące siatkę muszą mieć układ odniesienia i przyciętą krawędź. */
+.hero,
+.stats,
+.how,
+.contact,
+.carousel-section,
+.certs,
+.origin {
+	position: relative;
+	overflow: hidden;
+}
+
+/* Cała treść ponad warstwą dekoracyjną. Wykluczamy svg, a nie samą klasę
+   .ntc-mesh: w hero leży jeszcze drugi dekoracyjny SVG z okręgami z projektu,
+   pozycjonowany absolutnie, i nadanie mu position: relative wyrzuciłoby go
+   w układ strony. Wrappery treści są bez wyjątku divami. */
+.hero > *:not(svg),
+.stats > *:not(svg),
+.how > *:not(svg),
+.contact > *:not(svg),
+.carousel-section > *:not(svg),
+.certs > *:not(svg),
+.origin > *:not(svg) {
+	position: relative;
+	z-index: 1;
+}
+
+@media (max-width: 860px) {
+	/* Na telefonie kadr jest wąski, więc siatka zajmuje go w całości i zaczyna
+	   walczyć z tekstem. Zostaje sam ślad przy krawędzi. */
+	.ntc-mesh--corner {
+		-webkit-mask-image: linear-gradient(105deg, #000 0%, transparent 45%);
+		mask-image: linear-gradient(105deg, #000 0%, transparent 45%);
+	}
+}
+
+@media (max-width: 860px) {
+	/* Hero schodzi do jednej kolumny, zdjęcie ląduje pod tekstem, więc półkola
+	   nie mają już czego oprawiać. Zostaje sama siatka. */
+	.hero-bg-lines {
+		display: none;
+	}
+}
+
+/* --------------------------------------------------- mapa pochodzenia */
+
+.origin {
+	background: var(--ice-100);
+}
+
+.origin-head {
+	max-width: 760px;
+	margin-bottom: 40px;
+}
+
+.origin-map {
+	display: block;
+	width: 100%;
+	max-width: 1100px;
+	height: auto;
+	margin: 0 auto;
+}
+
+.origin-missing {
+	margin: 0;
+	padding: 48px 24px;
+	border: 1px dashed var(--line-100);
+	border-radius: 16px;
+	text-align: center;
+	color: var(--slate-400);
+	font-size: 14px;
+}
+
+/* Kody krajów pod mapą. Liczby biorą się z katalogu, więc lista bywa krótsza
+   albo dłuższa - siatka sama się układa zamiast trzymać sztywne kolumny. */
+.origin-counts {
+	list-style: none;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 12px;
+	margin: 40px 0 0;
+	padding: 0;
+}
+
+.origin-count {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+	padding: 10px 18px;
+	border-radius: 100px;
+	background: #fff;
+	border: 1px solid var(--line-100);
+}
+
+.origin-code {
+	font-weight: 700;
+	font-size: 14px;
+	letter-spacing: 0.06em;
+	color: var(--navy-700);
+}
+
+.origin-num {
+	font-size: 13px;
+	color: var(--slate-500);
+}
+
+.origin-note {
+	margin: 20px 0 0;
+	text-align: center;
+	font-size: 13px;
+	color: var(--slate-400);
+}
+
+/* Znak wpisany w ramkę: object-fit pilnuje, żeby ani nie wyszedł poza nią,
+   ani nie został rozciągnięty. Wysokość mniejsza od szerokości wyrównuje
+   wielkość optyczną - znaki szerokie i kwadratowe wychodzą wtedy podobne. */
+.carousel-logo--img img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	object-position: center;
+}
+
+.carousel-logo--img a {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	line-height: 0;
+}
+
+
+
+/* ------------------------------------------------------- dokumenty prawne */
+
+/* Polityki i regulaminy nie mają układu z projektu: to jedna kolumna tekstu.
+   Szerokość ogranicza .ntc-entry-content, tu chodzi tylko o odstępy sekcji. */
+.prose {
+	background: #fff;
+}
+
+/* Wariant na przemian: podstrony produktowe składają się z kilku bloków
+   tekstowych pod rząd i bez zmiany tła zlewają się w jedną ścianę. */
+.prose--alt {
+	background: var(--ice-100);
+}
+
+.prose .section-title {
+	margin-bottom: 16px;
+}
+
+.prose-lead {
+	max-width: 720px;
+	margin-bottom: 40px;
+}
+
+/* Wariant ze zdjęciem: długi blok tekstu dostaje ilustrację obok, żeby nie
+   był ścianą liter. Zdjęcie idzie za tekstem w kodzie, więc czytnik ekranu
+   dostaje najpierw treść. */
+.prose--z-foto .prose-grid {
+	display: grid;
+	grid-template-columns: 1.4fr 1fr;
+	gap: 64px;
+	align-items: stretch;
+}
+
+.prose--z-foto .ntc-entry-content {
+	max-width: none;
+}
+
+.prose-media {
+	display: flex;
+	align-items: stretch;
+}
+
+.prose-media img {
+	width: 100%;
+	height: 100%;
+	min-height: 420px;
+	max-width: 420px;
+	object-fit: cover;
+	border-radius: 20px;
+	box-shadow: 0 8px 40px rgba(11, 42, 66, 0.12);
+}
+
+@media (max-width: 860px) {
+	.prose--z-foto .prose-grid {
+		grid-template-columns: 1fr;
+		gap: 36px;
+	}
+
+	.prose-media img {
+		min-height: 0;
+		max-width: 320px;
+		aspect-ratio: 3 / 4;
+		margin: 0 auto;
+	}
+}
+
+.ntc-entry-content ol {
+	display: grid;
+	gap: 14px;
+}
+
+.ntc-entry-content li strong {
+	color: var(--navy-700);
+}

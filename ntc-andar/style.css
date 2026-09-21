@@ -1,0 +1,19 @@
+/*
+Theme Name: NTC Andar
+Theme URI: https://www.ntcandar.com.pl/
+Author: NTC Andar
+Description: Motyw firmowy NTC Andar Sp. z o.o. - dystrybucja substancji aktywnych, probiotyków i laktoferyny. Trzy szablony (strona główna, oferta, kontakt), dwie wersje językowe PL/EN, self-hostowany font Barlow.
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 6.8
+Requires PHP: 7.4
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: ntc-andar
+Tags: business, two-columns, custom-menu, translation-ready
+
+Właściwe style motywu leżą w assets/css/main.css (plus fonts.css, oferta.css,
+kontakt.css). Ten plik istnieje, bo WordPress wymaga nagłówka motywu w style.css,
+i celowo nie zawiera reguł - dzięki temu nie ma dwóch miejsc, w których trzeba
+szukać tego samego selektora.
+*/

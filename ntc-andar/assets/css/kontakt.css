@@ -1,0 +1,607 @@
+/*
+ * Podstrona: Kontakt.
+ *
+ * Ładowana tylko dla szablonu template-kontakt.php. Tło strony jest tu jasne
+ * (ice), a nie białe - karta kontaktowa i kafelki dojazdu odcinają się od
+ * niego bielą.
+ */
+
+body.page-kontakt {
+	background: var(--ice-100);
+}
+
+/* --------------------------------------------------------------------- hero */
+
+.lp-hero {
+	background: linear-gradient(135deg, #082235 0%, #0b3550 35%, #0d5068 70%, #0d7a6e 100%);
+	padding: 140px 0 70px;
+	color: #fff;
+	position: relative;
+	overflow: hidden;
+}
+
+.lp-hero-bg {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	opacity: 0.10;
+}
+
+.lp-hero-inner {
+	max-width: 980px;
+	margin: 0 auto;
+	padding: 0 var(--gutter);
+	text-align: center;
+	position: relative;
+	z-index: 2;
+}
+
+.lp-hero-badge {
+	display: inline-block;
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--teal-400);
+	background: rgba(27, 191, 168, 0.12);
+	border: 1px solid rgba(27, 191, 168, 0.25);
+	border-radius: 100px;
+	padding: 6px 16px;
+	margin-bottom: 24px;
+}
+
+.lp-hero-title {
+	font-family: var(--font-display);
+	font-size: clamp(36px, 5vw, 60px);
+	font-weight: 700;
+	line-height: 1.1;
+	margin-bottom: 20px;
+}
+
+.lp-hero-title em {
+	font-style: italic;
+	color: var(--teal-400);
+}
+
+.lp-hero-sub {
+	font-size: 17px;
+	line-height: 1.65;
+	color: rgba(255, 255, 255, 0.7);
+	max-width: 640px;
+	margin: 0 auto;
+}
+
+.page-kontakt .section {
+	padding: 80px 0;
+}
+
+.page-kontakt .section-title {
+	font-size: clamp(28px, 3.5vw, 40px);
+	line-height: 1.2;
+	font-weight: 700;
+}
+
+/* ------------------------------------------------------- karta kontaktowa */
+
+.contact-panel {
+	display: grid;
+	grid-template-columns: 1fr 1.1fr;
+	gap: 0;
+	background: #fff;
+	border-radius: 28px;
+	overflow: hidden;
+	box-shadow: 0 8px 48px rgba(11, 42, 66, 0.08);
+}
+
+.contact-info {
+	padding: 56px 48px;
+	position: relative;
+	background: linear-gradient(160deg, #082235 0%, #0b3550 50%, #0d5068 100%);
+	color: #fff;
+}
+
+.contact-info::before {
+	content: '';
+	position: absolute;
+	top: -80px;
+	right: -80px;
+	width: 240px;
+	height: 240px;
+	border-radius: 50%;
+	background: radial-gradient(circle, rgba(27, 191, 168, 0.3), transparent 70%);
+	pointer-events: none;
+}
+
+.contact-info-title {
+	font-family: var(--font-display);
+	font-size: 26px;
+	font-weight: 700;
+	line-height: 1.3;
+	margin-bottom: 14px;
+	position: relative;
+}
+
+.contact-info-sub {
+	font-size: 14px;
+	color: rgba(255, 255, 255, 0.65);
+	line-height: 1.6;
+	margin-bottom: 40px;
+	position: relative;
+}
+
+.contact-row {
+	display: flex;
+	gap: 16px;
+	align-items: flex-start;
+	padding: 16px 0;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	position: relative;
+}
+
+.contact-row:last-child {
+	border-bottom: none;
+}
+
+/* Zdjęcie zamyka ciemną kolumnę z danymi. Wysokość jest ograniczona, bo
+   kolumna obok (formularz) rośnie razem z liczbą pól i bez limitu fotografia
+   rozpychałaby panel. */
+.contact-info-media {
+	margin-top: 28px;
+	border-radius: 16px;
+	overflow: hidden;
+	position: relative;
+}
+
+.contact-info-media img {
+	display: block;
+	width: 100%;
+	height: 200px;
+	object-fit: cover;
+}
+
+.contact-row-icon {
+	width: 40px;
+	height: 40px;
+	flex-shrink: 0;
+	border-radius: 12px;
+	background: rgba(27, 191, 168, 0.18);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--teal-400);
+}
+
+.contact-row-icon svg {
+	width: 19px;
+	height: 19px;
+}
+
+.contact-row-label {
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 0.5);
+	margin-bottom: 4px;
+}
+
+.contact-row-value {
+	font-size: 15px;
+	color: #fff;
+	line-height: 1.5;
+}
+
+.contact-row-value a {
+	color: #fff;
+	text-decoration: none;
+}
+
+.contact-row-value a:hover {
+	color: var(--teal-400);
+}
+
+/* -------------------------------------------------------------- formularz */
+
+.contact-form-wrap {
+	padding: 56px 48px;
+}
+
+.contact-form-title {
+	font-family: var(--font-display);
+	font-size: 26px;
+	font-weight: 700;
+	color: var(--navy-700);
+	margin-bottom: 8px;
+}
+
+.contact-form-sub {
+	font-size: 14px;
+	color: var(--slate-500);
+	margin-bottom: 32px;
+	line-height: 1.6;
+}
+
+.contact-form-wrap .contact-form {
+	gap: 14px;
+}
+
+.form-row {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 14px;
+}
+
+.form-field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.form-field label {
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--slate-500);
+	letter-spacing: 0.02em;
+}
+
+/* Wariant jasny - odpowiednik ciemnego z main.css. */
+.contact-form-wrap .form-input {
+	background: var(--ice-100);
+	border: 1.5px solid var(--line-100);
+	border-radius: 12px;
+	padding: 13px 16px;
+	font-family: var(--font-body);
+	font-size: 14px;
+	color: var(--navy-700);
+	outline: none;
+	transition: border-color 0.2s, background 0.2s;
+	width: 100%;
+}
+
+.contact-form-wrap .form-input::placeholder {
+	color: var(--slate-400);
+}
+
+.contact-form-wrap .form-input:focus {
+	border-color: var(--teal-500);
+	background: #fff;
+}
+
+.contact-form-wrap textarea.form-input {
+	min-height: 130px;
+	resize: vertical;
+}
+
+.contact-form-wrap .form-consent {
+	display: flex;
+	gap: 10px;
+	align-items: flex-start;
+	font-size: 12px;
+	line-height: 1.55;
+	color: #6a8499;
+	cursor: pointer;
+	margin-top: 6px;
+}
+
+.contact-form-wrap .form-submit {
+	margin-top: 6px;
+	align-self: flex-start;
+	box-shadow: 0 4px 20px rgba(27, 191, 168, 0.3);
+}
+
+.contact-form-wrap .form-demo-notice {
+	color: var(--slate-400);
+}
+
+/* ----------------------------------------------------- potwierdzenie wysyłki */
+
+.sent-card {
+	text-align: center;
+	padding: 56px 32px;
+	background: linear-gradient(160deg, rgba(27, 191, 168, 0.08), rgba(12, 168, 130, 0.04));
+	border: 1.5px solid rgba(27, 191, 168, 0.25);
+	border-radius: 20px;
+}
+
+.sent-check {
+	width: 64px;
+	height: 64px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, var(--teal-500), var(--teal-600));
+	color: #fff;
+	font-size: 30px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0 auto 18px;
+	box-shadow: 0 8px 24px rgba(27, 191, 168, 0.35);
+}
+
+.sent-title {
+	font-family: var(--font-display);
+	font-size: 22px;
+	font-weight: 700;
+	color: var(--navy-700);
+	margin-bottom: 8px;
+}
+
+.sent-text {
+	font-size: 14px;
+	color: var(--slate-500);
+	line-height: 1.6;
+}
+
+/* ------------------------------------------------------------------ dojazd */
+
+.map-section {
+	background: #fff;
+}
+
+.map-head {
+	text-align: center;
+	margin-bottom: 48px;
+}
+
+.map-grid {
+	display: grid;
+	grid-template-columns: 1.2fr 1fr;
+	gap: 48px;
+	align-items: stretch;
+}
+
+.map-frame {
+	background: var(--line-100);
+	border-radius: 20px;
+	overflow: hidden;
+	aspect-ratio: 4 / 3;
+	position: relative;
+	border: 1px solid #dde6ed;
+}
+
+/* Podgląd mapy - siatka ulic w kolorach marki. Do podmiany na osadzoną mapę
+   (OSM albo Google), kiedy klient zdecyduje; osadzenie Google Maps wymaga
+   zgody w banerze cookies, dlatego domyślnie jest tu grafika. */
+.map-placeholder {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background:
+		repeating-linear-gradient(0deg, transparent, transparent 38px, rgba(27, 191, 168, 0.08) 38px, rgba(27, 191, 168, 0.08) 39px),
+		repeating-linear-gradient(90deg, transparent, transparent 38px, rgba(27, 191, 168, 0.08) 38px, rgba(27, 191, 168, 0.08) 39px),
+		linear-gradient(135deg, #e8f4f1, #d6e8e3);
+}
+
+.map-pin {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, var(--teal-500), var(--teal-600));
+	color: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 8px 24px rgba(27, 191, 168, 0.4);
+	position: relative;
+	z-index: 2;
+}
+
+.map-pin svg {
+	width: 22px;
+	height: 22px;
+}
+
+.map-pin::after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 80px;
+	height: 80px;
+	border: 2px solid rgba(27, 191, 168, 0.4);
+	border-radius: 50%;
+	transform: translate(-50%, -50%);
+	animation: ntc-pin-pulse 2.2s ease-out infinite;
+}
+
+@keyframes ntc-pin-pulse {
+	0%   { transform: translate(-50%, -50%) scale(0.6); opacity: 1; }
+	100% { transform: translate(-50%, -50%) scale(2);   opacity: 0; }
+}
+
+.map-label {
+	position: absolute;
+	bottom: 16px;
+	left: 16px;
+	background: #fff;
+	padding: 10px 16px;
+	border-radius: 12px;
+	font-size: 12px;
+	color: var(--slate-500);
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	box-shadow: 0 4px 14px rgba(11, 42, 66, 0.08);
+}
+
+.map-info {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.map-info-card {
+	background: var(--ice-100);
+	border-radius: 16px;
+	padding: 24px;
+	border: 1px solid var(--line-100);
+}
+
+.map-info-label {
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--teal-500);
+	margin-bottom: 10px;
+}
+
+.map-info-title {
+	font-family: var(--font-display);
+	font-size: 18px;
+	font-weight: 700;
+	color: var(--navy-700);
+	margin-bottom: 8px;
+}
+
+.map-info-text {
+	font-size: 13px;
+	line-height: 1.65;
+	color: var(--slate-500);
+}
+
+/* -------------------------------------------------------------- pasek CTA */
+
+.quick-cta-wrap {
+	padding: 0 24px;
+}
+
+.quick-cta {
+	background: linear-gradient(135deg, #082235 0%, #0d5068 100%);
+	color: #fff;
+	border-radius: 24px;
+	padding: 48px;
+	display: grid;
+	grid-template-columns: 1fr auto;
+	gap: 32px;
+	align-items: center;
+	max-width: 1160px;
+	margin: 0 auto 80px;
+}
+
+.quick-cta-head {
+	font-family: var(--font-display);
+	font-size: 24px;
+	font-weight: 700;
+	line-height: 1.3;
+	margin-bottom: 6px;
+}
+
+.quick-cta-sub {
+	font-size: 14px;
+	color: rgba(255, 255, 255, 0.6);
+}
+
+.quick-cta-row {
+	display: flex;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.btn-white {
+	background: #fff;
+	color: var(--navy-700);
+	text-decoration: none;
+	padding: 13px 24px;
+	border-radius: 100px;
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	transition: transform 0.15s;
+	display: inline-block;
+}
+
+.btn-white:hover {
+	transform: translateY(-2px);
+}
+
+.btn-outline-w {
+	background: transparent;
+	color: #fff;
+	text-decoration: none;
+	padding: 12px 24px;
+	border-radius: 100px;
+	border: 1.5px solid rgba(255, 255, 255, 0.4);
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	transition: border-color 0.2s, color 0.2s;
+	display: inline-block;
+}
+
+.btn-outline-w:hover {
+	border-color: var(--teal-400);
+	color: var(--teal-400);
+}
+
+@media (max-width: 900px) {
+	.contact-panel,
+	.map-grid,
+	.quick-cta {
+		grid-template-columns: 1fr;
+	}
+
+	.contact-info,
+	.contact-form-wrap {
+		padding: 40px 28px;
+	}
+
+	.form-row {
+		grid-template-columns: 1fr;
+	}
+
+	.quick-cta {
+		padding: 36px 28px;
+	}
+}
+
+/* Osadzona mapa Google wchodzi w miejsce dawnego podglądu. Ramka ma już
+   zaokrąglenie i przycięcie, iframe tylko ją wypełnia. */
+.map-embed {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	display: block;
+}
+
+/* -------------------------------------- formularz pod kategorią oferty */
+
+/* Karta na jasnym tle podstrony produktowej. Pola dziedziczą jasny wariant
+   z .contact-form-wrap, tu dochodzi tylko rama i szerokość. */
+.product-form {
+	background: var(--ice-100);
+}
+
+.product-form-card {
+	max-width: 820px;
+	margin: 0 auto;
+	background: #fff;
+	border: 1px solid var(--line-100);
+	border-radius: 24px;
+	box-shadow: 0 12px 48px rgba(11, 42, 66, 0.06);
+}
+
+.product-form-head {
+	margin-bottom: 32px;
+}
+
+.product-form-head .section-title {
+	margin-bottom: 12px;
+}
+
+.product-form-head .section-sub {
+	max-width: 620px;
+}
+
+@media (max-width: 600px) {
+	.product-form-card {
+		border-radius: 18px;
+	}
+
+	.contact-form-wrap {
+		padding: 36px 24px;
+	}
+}

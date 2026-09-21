@@ -1,0 +1,4 @@
+# Dostępy do WordPressa - nigdy nie trafiają do repozytorium.
+tools/.env
+
+.DS_Store

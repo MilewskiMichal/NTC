@@ -1,0 +1,303 @@
+/*
+ * NTC Andar - podstrona jakości.
+ *
+ * Trzy układy, których nie było w projekcie strony głównej: lista zdań
+ * odhaczonych ptaszkiem z ilustracją obok, ciemny pas z jednym zdaniem
+ * i siatka certyfikatów.
+ *
+ * Schodzi tylko tam, gdzie stoi któryś z tych bloków - reszta podstron nie
+ * płaci za to ani bajta.
+ */
+
+/* ------------------------------------------------------------- lista zdań */
+
+.checklist {
+	background: #fff;
+}
+
+.checklist--alt {
+	background: var(--ice-100);
+}
+
+/* Kolumny równej wysokości, żeby ilustracja mogła się rozciągnąć na całą
+   sekcję. Przy wyśrodkowaniu zdjęcie zostawało niskim paskiem obok długiej
+   listy i pół kolumny świeciło pustką. */
+.checklist-grid {
+	display: grid;
+	grid-template-columns: 1.35fr 1fr;
+	gap: 64px;
+	align-items: stretch;
+}
+
+/* Naprzemienne strony: ilustracja raz z prawej, raz z lewej. Kolejność w
+   HTML-u zostaje ta sama, więc czytnik ekranu zawsze dostaje najpierw tekst. */
+.checklist-grid--flip .checklist-text {
+	order: 2;
+}
+
+.checklist-grid--flip .checklist-media {
+	order: 1;
+}
+
+.checklist-items {
+	list-style: none;
+	margin: 28px 0 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+}
+
+.checklist-item {
+	display: grid;
+	grid-template-columns: 20px 1fr;
+	gap: 14px;
+	align-items: start;
+}
+
+.checklist-tick {
+	color: var(--teal-500);
+	line-height: 0;
+	/* Ptaszek ma siedzieć na wysokości pierwszej linijki tekstu, a nie na
+	   środku całego akapitu - punkty mają po pięć linijek. */
+	margin-top: 3px;
+}
+
+.checklist-body {
+	color: var(--slate-500);
+	font-size: 15px;
+	line-height: 1.75;
+}
+
+.checklist-body strong {
+	/* Na starej stronie wyróżnione fragmenty (nazwy norm, rejestrów, procedur)
+	   szły kolorem marki, nie pogrubieniem. Zostajemy przy tym. */
+	color: var(--teal-600);
+	font-weight: 500;
+}
+
+.checklist-body a {
+	color: var(--teal-600);
+	text-decoration: none;
+	border-bottom: 1px solid rgba(27, 191, 168, 0.4);
+}
+
+.checklist-body a:hover {
+	border-bottom-color: var(--teal-600);
+}
+
+/* Ujemny margines o wysokości odstępu sekcji wypycha ilustrację poza siatkę,
+   aż do górnej i dolnej krawędzi sekcji. Wysokość bierze się z kolumny tekstu,
+   więc zdjęcie zawsze kończy się dokładnie tam, gdzie sekcja. */
+.checklist-media {
+	display: flex;
+	justify-content: center;
+	align-items: stretch;
+	margin-top: calc(-1 * var(--odstep-sekcji));
+	margin-bottom: calc(-1 * var(--odstep-sekcji));
+}
+
+/* Pierwsza sekcja pod nagłówkiem nie wychodzi do góry: zdjęcie dociągnięte do
+   krawędzi dotykałoby ciemnego pasa hero i zlewało się z nim w jeden blok.
+   Zaczyna się więc razem z tekstem "Polityka jakości". */
+.hero + .checklist .checklist-media {
+	margin-top: 0;
+}
+
+/* Kadr pionowy, na pełną wysokość sekcji. Zdjęcia do trzech sekcji przychodzą
+   w różnych proporcjach, więc przycinamy je object-fit, a nie ustawiamy
+   sztywnej proporcji - inaczej przy dłuższej liście punktów obok ilustracji
+   zostawał pusty pas. min-height jest niższy niż najkrótsza z sekcji, więc
+   pilnuje tylko skrajnego przypadku i nigdy nie wypycha zdjęcia poza sekcję. */
+.checklist-img {
+	width: 100%;
+	max-width: 400px;
+	height: 100%;
+	min-height: 320px;
+	object-fit: cover;
+	border-radius: 20px;
+}
+
+/* ----------------------------------------------------------- pas z cytatem */
+
+.quote-band {
+	position: relative;
+	overflow: hidden;
+	background: linear-gradient(135deg, var(--navy-800), var(--navy-600));
+	padding: 88px var(--gutter);
+}
+
+.quote-band-lines {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
+
+.quote-band-inner {
+	position: relative;
+	max-width: 900px;
+	margin: 0 auto;
+	text-align: center;
+}
+
+.quote-band-text {
+	margin: 0;
+	color: #fff;
+	font-size: 22px;
+	line-height: 1.7;
+	font-weight: 300;
+}
+
+.quote-band-text em {
+	font-style: normal;
+	color: var(--teal-400);
+}
+
+/* ------------------------------------------------------------ certyfikaty */
+
+.certs-lead {
+	max-width: 900px;
+	margin: 16px 0 0;
+	color: var(--slate-500);
+	font-size: 15px;
+	line-height: 1.75;
+}
+
+.certs-lead a {
+	color: var(--teal-600);
+	text-decoration: none;
+	border-bottom: 1px solid rgba(27, 191, 168, 0.4);
+}
+
+.certs-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 28px;
+	margin-top: 48px;
+}
+
+.cert-card {
+	text-align: center;
+	padding: 32px 20px;
+	border: 1px solid var(--line-100);
+	border-radius: 16px;
+	background: #fff;
+}
+
+.cert-mark {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	/* Godła inspektoratów to rysunki kreską z napisem po okręgu. Przy 92 px
+	   napis był nieczytelny, a na starej stronie stały w 300 px. */
+	height: 124px;
+	margin-bottom: 20px;
+}
+
+.cert-mark img {
+	max-width: 180px;
+	max-height: 124px;
+	width: auto;
+	height: auto;
+}
+
+/* Zanim dojdą skany certyfikatów, w kółku stoi nazwa wydawcy. Lepsze to niż
+   pusty prostokąt, po którym nie widać, czego kafelek dotyczy. */
+.cert-mark-text {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 92px;
+	height: 92px;
+	padding: 8px;
+	border-radius: 50%;
+	background: var(--ice-100);
+	color: var(--navy-600);
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.3;
+}
+
+.cert-line {
+	color: var(--slate-500);
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+.cert-line + .cert-line {
+	margin-top: 10px;
+}
+
+/* Odnośnik do skanu. Plakietka "PDF" mówi, co się otworzy, zanim ktoś kliknie -
+   na starej stronie były to gołe odnośniki i nie było tego widać. */
+.cert-file {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 8px;
+	color: var(--navy-700);
+	text-decoration: none;
+	border-bottom: 1px solid transparent;
+	transition: color 0.2s, border-color 0.2s;
+}
+
+.cert-file:hover {
+	color: var(--teal-600);
+	border-bottom-color: var(--teal-600);
+}
+
+.cert-file-tag {
+	flex: none;
+	padding: 1px 6px;
+	border-radius: 4px;
+	background: var(--ice-100);
+	color: var(--slate-400);
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+}
+
+.cert-file:hover .cert-file-tag {
+	background: rgba(27, 191, 168, 0.12);
+	color: var(--teal-600);
+}
+
+/* ---------------------------------------------------------------- telefon */
+
+@media (max-width: 860px) {
+	.checklist-grid {
+		grid-template-columns: 1fr;
+		gap: 36px;
+	}
+
+	/* Na wąskim ekranie ilustracja zawsze pod tekstem, niezależnie od flip. */
+	.checklist-grid--flip .checklist-text,
+	.checklist-grid--flip .checklist-media {
+		order: initial;
+	}
+
+	/* Na wąskim ekranie zdjęcie stoi pod tekstem, więc nie ma czego wypełniać
+	   na wysokość - wraca stała proporcja, tyle że pionowa. Ujemne marginesy
+	   też schodzą, bo nie ma już sąsiedniej kolumny, której wysokość miałyby
+	   przekroczyć. */
+	.checklist-media {
+		margin-top: 0;
+		margin-bottom: 0;
+	}
+
+	.checklist-img {
+		max-width: 300px;
+		height: auto;
+		min-height: 0;
+		aspect-ratio: 3 / 4;
+	}
+
+	.quote-band {
+		padding: 56px var(--gutter);
+	}
+
+	.quote-band-text {
+		font-size: 18px;
+	}
+}

@@ -1,0 +1,432 @@
+/*
+ * Podstrona: Oferta.
+ *
+ * Ładowana tam, gdzie stoją bloki oferty. Sam nagłówek podstrony przeniósł się
+ * do main.css, bo używa go też blog, który tego arkusza nie wczytuje.
+ */
+
+/* ----------------------------------------------------------------- zakładki */
+
+.tabs-bar {
+	display: flex;
+}
+
+.tab-btn {
+	padding: 14px 28px;
+	font-family: var(--font-display);
+	font-size: 14px;
+	font-weight: 700;
+	color: rgba(255, 255, 255, 0.55);
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	border-bottom: 3px solid transparent;
+	transition: color 0.2s, border-color 0.2s;
+	letter-spacing: 0.04em;
+	white-space: nowrap;
+}
+
+.tab-btn:hover {
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.tab-btn.active {
+	color: #fff;
+	border-bottom-color: var(--teal-500);
+}
+
+/* --------------------------------------------------------- sekcja kategorii */
+
+.cat-section {
+	/* Ten sam odstęp co w pozostałych sekcjach - przy 80 px rytm strony rwał
+	   się na styku oferty z resztą bloków. */
+	padding: var(--odstep-sekcji) 0;
+	background: #fff;
+}
+
+.cat-section--alt {
+	background: var(--ice-100);
+}
+
+/* Kolumny równej wysokości: zdjęcie sięga tam, gdzie kończy się tekst wraz
+   z przyciskiem. Przy align-items: start zostawało przyklejone do góry i przy
+   dłuższym opisie wyglądało, jakby wisiało nad sekcją. */
+.cat-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 80px;
+	align-items: stretch;
+	margin-bottom: 56px;
+}
+
+.cat-media {
+	display: flex;
+	align-items: stretch;
+}
+
+/* Co druga kategoria ma zdjęcie po lewej. W prototypie robił to direction:rtl
+   z odwracaniem kierunku na każdym dziecku - tu wystarczy przestawić kolumnę,
+   co nie rusza kierunku tekstu i nie psuje zaznaczania. */
+.cat-section--alt .cat-text {
+	order: 2;
+}
+
+.cat-img {
+	width: 100%;
+	height: 100%;
+	/* Dolne ograniczenie dla krótkich opisów, górne - żeby przy bardzo długim
+	   tekście zdjęcie nie urosło do słupa. */
+	min-height: 360px;
+	max-height: 620px;
+	border-radius: 20px;
+	object-fit: cover;
+	box-shadow: 0 8px 40px rgba(11, 42, 66, 0.12);
+	display: block;
+}
+
+.cat-text .section-sub + .section-sub {
+	margin-top: 16px;
+}
+
+/* ------------------------------------------------------------ tabela pozycji */
+
+.search-bar {
+	display: flex;
+	gap: 12px;
+	margin-bottom: 20px;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+.search-input {
+	flex: 1;
+	min-width: 200px;
+	padding: 10px 16px;
+	border: 1.5px solid #dde6ed;
+	border-radius: 100px;
+	font-family: var(--font-body);
+	font-size: 14px;
+	color: var(--navy-700);
+	outline: none;
+	transition: border-color 0.2s;
+	background: #fff;
+}
+
+.search-input:focus {
+	border-color: var(--teal-500);
+}
+
+.search-input::placeholder {
+	color: #aabccc;
+}
+
+.search-count {
+	font-size: 13px;
+	color: var(--slate-400);
+	white-space: nowrap;
+}
+
+.table-wrap {
+	border: 1px solid var(--line-100);
+	border-radius: 16px;
+	overflow: hidden;
+	background: #fff;
+}
+
+.product-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.product-table th {
+	text-align: left;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--slate-400);
+	padding: 12px 16px;
+	border-bottom: 2px solid var(--line-100);
+	background: #fff;
+}
+
+.product-table td {
+	padding: 14px 16px;
+	border-bottom: 1px solid #eef3f7;
+	font-size: 14px;
+	color: #2a4a62;
+	vertical-align: middle;
+}
+
+.product-table tr:hover td {
+	background: #f8fbfd;
+}
+
+.product-table tbody tr:last-child td {
+	border-bottom: none;
+}
+
+.prod-name {
+	font-weight: 600;
+	color: var(--navy-700);
+}
+
+.prod-doc {
+	font-size: 12px;
+	color: var(--slate-400);
+}
+
+.prod-tag {
+	display: inline-block;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--teal-500);
+	background: rgba(27, 191, 168, 0.1);
+	border-radius: 100px;
+	padding: 3px 10px;
+	margin-right: 4px;
+	margin-bottom: 2px;
+}
+
+.table-empty td {
+	text-align: center;
+	padding: 32px;
+	color: var(--slate-400);
+}
+
+/* --------------------------------------------------------- nie znalazłeś? */
+
+.not-found {
+	background: linear-gradient(135deg, #082235, #0b3a55);
+	border-radius: 20px;
+	padding: 48px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 32px;
+	flex-wrap: wrap;
+	margin-top: 40px;
+}
+
+.not-found-title {
+	font-family: var(--font-display);
+	font-size: 22px;
+	font-weight: 700;
+	color: #fff;
+	margin-bottom: 8px;
+}
+
+.not-found-text {
+	font-size: 14px;
+	color: rgba(255, 255, 255, 0.55);
+	max-width: 420px;
+	line-height: 1.6;
+}
+
+.not-found .btn-primary {
+	white-space: nowrap;
+}
+
+/* -------------------------------------------------- maszyny (ciemna sekcja) */
+
+.machines {
+	background: linear-gradient(160deg, #082235 0%, #0b3a55 50%, #0d5068 100%);
+	padding: 100px 0;
+}
+
+.machines .cat-grid {
+	margin-bottom: 0;
+	align-items: center;
+}
+
+.machines .section-label {
+	color: var(--teal-400);
+}
+
+.machines .section-title {
+	color: #fff;
+}
+
+.machines .section-sub {
+	color: rgba(255, 255, 255, 0.65);
+	margin-bottom: 32px;
+}
+
+@media (max-width: 900px) {
+	.cat-grid {
+		grid-template-columns: 1fr;
+		gap: 40px;
+	}
+
+	/* Na wąskim ekranie tekst zawsze idzie przed zdjęciem. */
+	.cat-section--alt .cat-text {
+		order: 0;
+	}
+
+	/* Zdjęcie stoi pod tekstem, więc nie ma czego dopasowywać na wysokość -
+	   wraca stała proporcja, pionowa. */
+	.cat-img {
+		height: auto;
+		min-height: 0;
+		max-height: none;
+		aspect-ratio: 4 / 3;
+	}
+
+	.tabs-bar {
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.tab-btn {
+		padding: 14px 18px;
+	}
+}
+
+@media (max-width: 600px) {
+	.not-found {
+		padding: 32px;
+	}
+
+	/* Tabela zjeżdża w poziomie zamiast rozpychać stronę. */
+	.table-wrap {
+		overflow-x: auto;
+	}
+
+	.product-table {
+		min-width: 640px;
+	}
+}
+
+/* Przycisk wejścia w podstronę kategorii.
+   Strzałka odjeżdża na najechanie, tak samo jak w kafelkach oferty na stronie
+   głównej - to ten sam gest, więc niech zachowuje się tak samo. */
+.cat-cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	margin-top: 28px;
+}
+
+.cat-cta-arrow {
+	transition: transform 0.2s ease;
+}
+
+.cat-cta:hover .cat-cta-arrow {
+	transform: translateX(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.cat-cta-arrow {
+		transition: none;
+	}
+}
+
+/* ------------------------------------------------- okno przewijania tabeli */
+
+/*
+ * Katalog API to ponad 200 pozycji. Wypuszczony na całą wysokość strony spycha
+ * stopkę tak daleko, że pasek przewijania przeglądarki przestaje cokolwiek
+ * mówić o długości strony. Dlatego tabela dostaje własne okno: kółko myszy nad
+ * listą przewija listę, a nie dokument.
+ */
+.table-wrap {
+	max-height: 520px;
+	overflow: auto;
+	/* Łańcuch przewijania przerwany na krawędzi - dojechanie do końca listy nie
+	   pociąga za sobą całej strony. */
+	overscroll-behavior: contain;
+}
+
+/* Podstrona kategorii pokazuje pełen listing bez stronicowania, więc okno może
+   być wyższe: tam nie ma nic pod tabelą poza stopką. */
+.table-wrap--tall {
+	max-height: 70vh;
+}
+
+/* Nagłówek zostaje widoczny przy przewijaniu - bez tego przy 200 wierszach
+   po chwili nie wiadomo, która kolumna jest która. */
+.product-table thead th {
+	position: sticky;
+	top: 0;
+	z-index: 2;
+	background: #fff;
+}
+
+.cat-section--alt .product-table thead th {
+	background: var(--ice-100);
+}
+
+.prod-group {
+	/* Pełna nazwa grupy siedzi w title, więc sygnalizujemy, że jest co najechać. */
+	border-bottom: 1px dotted var(--slate-400);
+	cursor: help;
+}
+
+.prod-dev {
+	display: inline-block;
+	margin-left: 8px;
+	padding: 2px 8px;
+	border-radius: 999px;
+	background: #fff4e0;
+	color: #9a6413;
+	font-size: 11px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+/* ------------------------------------------------------------ stronicowanie */
+
+.table-pager {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 16px;
+	margin-top: 20px;
+}
+
+.pager-btn {
+	padding: 9px 18px;
+	border: 1px solid var(--line-100);
+	border-radius: 10px;
+	background: #fff;
+	color: var(--navy-700);
+	font: inherit;
+	font-size: 14px;
+	cursor: pointer;
+	transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.pager-btn:hover:not(:disabled) {
+	border-color: var(--teal-500);
+	color: var(--teal-600);
+}
+
+.pager-btn:disabled {
+	opacity: 0.45;
+	cursor: default;
+}
+
+.pager-state {
+	color: var(--slate-500);
+	font-size: 14px;
+	min-width: 90px;
+	text-align: center;
+}
+
+@media (max-width: 860px) {
+	.table-wrap,
+	.table-wrap--tall {
+		max-height: 60vh;
+	}
+}
+
+/* Adres partnera pod przyciskiem w sekcji maszyn - drobniejszy od reszty,
+   bo to dane teleadresowe, a nie część opisu oferty. */
+.machines-note {
+	margin-top: 24px;
+	font-size: 14px;
+	line-height: 1.7;
+	color: rgba(255, 255, 255, 0.55);
+}
