@@ -1025,9 +1025,20 @@ function ntc_render_product_form( $attrs ) {
 						<div class="section-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
 					<?php endif; ?>
 					<h2 class="section-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h2>
-					<?php if ( ntc_a( $attrs, 'sub' ) ) : ?>
-						<p class="section-sub"><?php echo esc_html( ntc_a( $attrs, 'sub' ) ); ?></p>
-					<?php endif; ?>
+					<?php
+					// Klient prosił, żeby osobne zdania stawały w osobnych
+					// wierszach. Łamiemy po kropce kończącej zdanie, a nie po
+					// każdej - inaczej skróty w rodzaju "m.in." rozbijałyby wiersz.
+					$zdania = preg_split(
+						'/(?<=[.!?])\s+(?=[A-ZĄĆĘŁŃÓŚŹŻ])/u',
+						(string) ntc_a( $attrs, 'sub' ),
+						-1,
+						PREG_SPLIT_NO_EMPTY
+					);
+					?>
+					<?php foreach ( $zdania as $zdanie ) : ?>
+						<p class="section-sub"><?php echo esc_html( $zdanie ); ?></p>
+					<?php endforeach; ?>
 				</div>
 				<?php
 				ntc_the_contact_form(

@@ -596,6 +596,12 @@ body.page-kontakt {
 	max-width: 620px;
 }
 
+/* Kolejne zdania stoją w osobnych wierszach, ale to nadal jeden wstęp, więc
+   odstęp między nimi jest mniejszy niż między akapitami. */
+.product-form-head .section-sub + .section-sub {
+	margin-top: 6px;
+}
+
 @media (max-width: 600px) {
 	.product-form-card {
 		border-radius: 18px;
