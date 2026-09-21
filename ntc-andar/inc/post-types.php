@@ -56,6 +56,15 @@ function ntc_product_fields() {
 			'label' => 'Status',
 			'hint'  => 'Wypełnij tylko dla substancji w opracowaniu - wtedy przy nazwie pojawi się plakietka.',
 		),
+		'_ntc_collection' => array(
+			'label' => 'Kolekcja',
+			'hint'  => 'Numer szczepu w kolekcji, np. CNCM I-6030 albo MTCC 5260. Dotyczy probiotyków.',
+		),
+		'_ntc_postbiotic' => array(
+			'label' => 'Dostępny jako postbiotyk',
+			'hint'  => 'Wpisz "tak", jeśli szczep jest dostępny również w wersji postbiotycznej. '
+				. 'Puste pole znaczy, że nie jest.',
+		),
 	);
 }
 
@@ -342,6 +351,8 @@ function ntc_get_products( $slug ) {
 			'maker'      => (string) get_post_meta( $post->ID, '_ntc_maker', true ),
 			'use'        => (string) get_post_meta( $post->ID, '_ntc_use', true ),
 			'dev'        => (string) get_post_meta( $post->ID, '_ntc_dev', true ),
+			'collection' => (string) get_post_meta( $post->ID, '_ntc_collection', true ),
+			'postbiotic' => (string) get_post_meta( $post->ID, '_ntc_postbiotic', true ),
 		);
 	}
 

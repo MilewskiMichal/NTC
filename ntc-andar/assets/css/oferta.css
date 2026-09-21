@@ -504,3 +504,23 @@
 		height: 72px;
 	}
 }
+
+/* Plakietki dokumentacji stały wcześniej bez odstępu i przy dwóch skrótach
+   pod rząd zlewały się w jeden ciąg znaków ("CEPDMF"). */
+.prod-doc + .prod-doc {
+	margin-left: 6px;
+}
+
+/* Znacznik dostępności w wąskiej kolumnie. */
+.prod-flag {
+	font-size: 16px;
+	line-height: 1;
+}
+
+.prod-flag--tak {
+	color: var(--teal-600);
+}
+
+.prod-flag--nie {
+	color: #bcccd8;
+}

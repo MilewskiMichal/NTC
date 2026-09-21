@@ -110,7 +110,8 @@ function ntc_rich( $html ) {
 
 /** Kolumny, które tabela katalogu umie pokazać. */
 function ntc_table_column_keys() {
-	return array( 'name', 'group', 'cas', 'form', 'maker', 'origin', 'use', 'docs' );
+	return array( 'name', 'group', 'cas', 'form', 'maker', 'origin', 'use', 'docs',
+		'collection', 'postbiotic' );
 }
 
 /**
@@ -231,6 +232,21 @@ function ntc_table_cell( $row, $col ) {
 
 		case 'origin':
 			return '<span class="prod-doc">' . esc_html( $value ) . '</span>';
+
+		case 'collection':
+			return '<span class="prod-doc">' . esc_html( $value ) . '</span>';
+
+		case 'postbiotic':
+			// Ptaszek albo krzyżyk zamiast słowa - kolumna jest wąska, a wzrok
+			// i tak szuka w niej znaku, nie tekstu. Czytnik ekranu dostaje opis.
+			$tak = in_array( mb_strtolower( trim( $value ) ), array( 'tak', 'yes', '1', 'tak.' ), true );
+
+			return sprintf(
+				'<span class="prod-flag prod-flag--%s" role="img" aria-label="%s">%s</span>',
+				$tak ? 'tak' : 'nie',
+				esc_attr( ntc_raw( $tak ? 'table.yes' : 'table.no' ) ),
+				$tak ? '&#10003;' : '&#8211;'
+			);
 
 		default:
 			return esc_html( $value );
