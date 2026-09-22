@@ -8,6 +8,27 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Adres podstrony oferty, np. ntc_offer_url( 'probiotyki/' ).
+ *
+ * Doklejanie ścieżki do ntc_page_url() psuło się w wersji angielskiej, bo
+ * adres kończył się już na ?lang=en i ścieżka lądowała za parametrem.
+ *
+ * @param string $path Ścieżka względem strony oferty, z kotwicą lub bez.
+ * @return string
+ */
+function ntc_offer_url( $path ) {
+	$baza   = trailingslashit( remove_query_arg( 'lang', ntc_page_url( 'oferta' ) ) );
+	$kotwa  = '';
+
+	if ( false !== strpos( $path, '#' ) ) {
+		list( $path, $kotwa ) = explode( '#', $path, 2 );
+		$kotwa                = '#' . $kotwa;
+	}
+
+	return ntc_url( $baza . ltrim( $path, '/' ) ) . $kotwa;
+}
+
+/**
  * Adres podstrony zbudowanej na jednym z szablonów motywu.
  *
  * Szukamy najpierw strony, która ma przypisany szablon (template-oferta.php),

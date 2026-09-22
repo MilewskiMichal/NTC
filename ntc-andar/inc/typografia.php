@@ -58,14 +58,23 @@ const NTC_TYPO_MAX_SIEROTA = 12;
 function ntc_typo_tekst( $tekst, $koniec = false ) {
 	$slowa = ntc_typo_slowa();
 
+	// Twarda spacja po "a", "i", "w" to reguła polskiego składu. W angielskim
+	// "a" i "I" to zupełnie inne słowa i sklejanie ich z następnym robiłoby
+	// dziury w wierszach - zostaje tylko pilnowanie sierot na końcu akapitu.
+	if ( function_exists( 'ntc_is_en' ) && ntc_is_en() ) {
+		$slowa = '';
+	}
+
 	// Krótkie słowo + spacja -> krótkie słowo + twarda spacja. Wymagamy
 	// początku tekstu albo białego znaku przed, żeby nie trafić w końcówkę
 	// dłuższego wyrazu ("tego" nie kończy się przyimkiem "o").
-	$tekst = preg_replace(
-		'/(^|[\s\x{00A0}(„"\x{2018}\x{201E}])(' . $slowa . ')[ \t]+/iu',
-		'$1$2' . "\xc2\xa0",
-		$tekst
-	);
+	if ( '' !== $slowa ) {
+		$tekst = preg_replace(
+			'/(^|[\s\x{00A0}(„"\x{2018}\x{201E}])(' . $slowa . ')[ \t]+/iu',
+			'$1$2' . "\xc2\xa0",
+			$tekst
+		);
+	}
 
 	if ( ! $koniec ) {
 		return $tekst;

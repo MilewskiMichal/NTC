@@ -1532,7 +1532,7 @@ function ntc_render_page_hero( $attrs ) {
 
 	if ( ntc_a( $attrs, 'showTabs', true ) ) {
 		$post = get_post();
-		$cats = $post ? ntc_content_sections( parse_blocks( $post->post_content ) ) : array();
+		$cats = $post ? ntc_content_sections( parse_blocks( ntc_post_content( $post ) ) ) : array();
 
 		// Blok poza stroną z sekcjami (np. podgląd wzorca) - wtedy zakładki z
 		// listy kategorii są lepsze niż ich brak.

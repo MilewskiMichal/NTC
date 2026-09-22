@@ -224,6 +224,7 @@ return array(
 	'table.group'              => 'Grupa terapeutyczna',
 	'table.maker'              => 'Wytwórca',
 	'table.use'                => 'Zastosowanie',
+	'site.tagline'             => 'Dystrybutor substancji czynnych i surowców dla przemysłu farmaceutycznego',
 	'table.dev'                => 'w opracowaniu',
 	'table.collection'         => 'Kolekcja',
 	'table.postbiotic'         => 'Dostępny jako postbiotyk',

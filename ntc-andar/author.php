@@ -15,11 +15,11 @@ get_header();
 
 $ntc_autor_id = (int) get_queried_object_id();
 $ntc_autor    = array(
-	'imie'       => get_the_author_meta( 'display_name', $ntc_autor_id ),
-	'stanowisko' => (string) get_user_meta( $ntc_autor_id, 'ntc_stanowisko', true ),
-	'bio'        => (string) get_the_author_meta( 'description', $ntc_autor_id ),
+	'imie'       => ntc_autor_tekst( $ntc_autor_id, 'imie' ),
+	'stanowisko' => ntc_autor_tekst( $ntc_autor_id, 'stanowisko' ),
+	'bio'        => ntc_autor_tekst( $ntc_autor_id, 'bio' ),
 	'foto'       => ntc_autor_foto( $ntc_autor_id, 240 ),
-	'inicjaly'   => ntc_autor_inicjaly( get_the_author_meta( 'display_name', $ntc_autor_id ) ),
+	'inicjaly'   => ntc_autor_inicjaly( ntc_autor_tekst( $ntc_autor_id, 'imie' ) ),
 	'profile'    => array_values(
 		array_filter(
 			array(

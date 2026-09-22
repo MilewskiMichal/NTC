@@ -17,9 +17,20 @@ defined( 'ABSPATH' ) || exit;
 const NTC_PRODUCT_CPT = 'ntc_product';
 const NTC_PRODUCT_TAX = 'ntc_product_cat';
 
+/**
+ * Pola produktu, które mają wersję angielską.
+ *
+ * "name" to nazwa wyświetlana w tabeli - tytuł wpisu zostaje polski.
+ *
+ * @return string[]
+ */
+function ntc_product_fields_en() {
+	return array( 'name', 'group', 'group_full', 'form', 'use', 'origin', 'cas', 'docs', 'dev' );
+}
+
 /** Pola dodatkowe produktu: klucz meta => etykieta w kokpicie. */
 function ntc_product_fields() {
-	return array(
+	$pola = array(
 		'_ntc_cas'    => array(
 			'label' => 'Nr CAS',
 			'hint'  => 'Np. 1115-70-4. Zostaw myślnik, jeśli substancja go nie ma.',
@@ -66,6 +77,23 @@ function ntc_product_fields() {
 				. 'Puste pole znaczy, że nie jest.',
 		),
 	);
+
+	// Angielskie odpowiedniki pól opisowych - w formularzu pod polskimi,
+	// z tą samą podpowiedzią. Puste zostawia w wersji EN wartość polską.
+	$nazwy = array(
+		'name' => array( 'label' => 'Nazwa w tabeli', 'hint' => 'Np. Lactoferrin 95%. Puste - tytuł wpisu.' ),
+	);
+
+	foreach ( ntc_product_fields_en() as $pole ) {
+		$zrodlo = isset( $pola[ '_ntc_' . $pole ] ) ? $pola[ '_ntc_' . $pole ] : $nazwy[ $pole ];
+
+		$pola[ '_ntc_' . $pole . '_en' ] = array(
+			'label' => $zrodlo['label'] . ' (EN)',
+			'hint'  => 'Wersja angielska. ' . $zrodlo['hint'],
+		);
+	}
+
+	return $pola;
 }
 
 /**
@@ -354,6 +382,21 @@ function ntc_get_products( $slug ) {
 			'collection' => (string) get_post_meta( $post->ID, '_ntc_collection', true ),
 			'postbiotic' => (string) get_post_meta( $post->ID, '_ntc_postbiotic', true ),
 		);
+
+		// W wersji angielskiej pola opisowe biorą się z odpowiedników "_en",
+		// jeśli redakcja je wypełniła. Puste pole zostawia wartość polską -
+		// nazwy łacińskie, numery CAS czy nazwy wytwórców są i tak te same.
+		if ( function_exists( 'ntc_is_en' ) && ntc_is_en() ) {
+			$ostatni = count( $rows ) - 1;
+
+			foreach ( ntc_product_fields_en() as $pole ) {
+				$en = (string) get_post_meta( $post->ID, '_ntc_' . $pole . '_en', true );
+
+				if ( '' !== $en ) {
+					$rows[ $ostatni ][ $pole ] = $en;
+				}
+			}
+		}
 	}
 
 	return $rows;

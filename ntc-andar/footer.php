@@ -57,14 +57,14 @@ $ntc_copy = (string) get_theme_mod( 'ntc_footer_copy', ntc_raw( 'footer.copy' ) 
 					array(
 						// Osiem pozycji odwzorowuje stan faktyczny oferty. "Maszyny"
 						// i "Usługi" prowadzą do jednej podstrony, w dwa różne miejsca.
-						ntc_raw( 'footer.offer_api' )         => ntc_page_url( 'oferta' ) . 'substancje-czynne-api/',
-						ntc_raw( 'footer.offer_probiotics' )  => ntc_page_url( 'oferta' ) . 'probiotyki/',
-						ntc_raw( 'footer.offer_lactoferrin' ) => ntc_page_url( 'oferta' ) . 'laktoferyna/',
-						ntc_raw( 'footer.offer_colostrum' )   => ntc_page_url( 'oferta' ) . 'colostrum/',
-						ntc_raw( 'footer.offer_proteins' )    => ntc_page_url( 'oferta' ) . 'bialka-mleka/',
-						ntc_raw( 'footer.offer_collagen' )    => ntc_page_url( 'oferta' ) . 'kolagen/',
-						ntc_raw( 'footer.offer_machines' )    => ntc_page_url( 'oferta' ) . 'maszyny-i-uslugi/#cat-maszyny',
-						ntc_raw( 'footer.offer_services' )    => ntc_page_url( 'oferta' ) . 'maszyny-i-uslugi/#cat-uslugi',
+						ntc_raw( 'footer.offer_api' )         => ntc_offer_url( 'substancje-czynne-api/' ),
+						ntc_raw( 'footer.offer_probiotics' )  => ntc_offer_url( 'probiotyki/' ),
+						ntc_raw( 'footer.offer_lactoferrin' ) => ntc_offer_url( 'laktoferyna/' ),
+						ntc_raw( 'footer.offer_colostrum' )   => ntc_offer_url( 'colostrum/' ),
+						ntc_raw( 'footer.offer_proteins' )    => ntc_offer_url( 'bialka-mleka/' ),
+						ntc_raw( 'footer.offer_collagen' )    => ntc_offer_url( 'kolagen/' ),
+						ntc_raw( 'footer.offer_machines' )    => ntc_offer_url( 'maszyny-i-uslugi/#cat-maszyny' ),
+						ntc_raw( 'footer.offer_services' )    => ntc_offer_url( 'maszyny-i-uslugi/#cat-uslugi' ),
 					)
 				);
 				?>

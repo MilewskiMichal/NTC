@@ -21,6 +21,7 @@ require_once get_template_directory() . '/inc/blocks.php';
 require_once get_template_directory() . '/inc/patterns.php';
 require_once get_template_directory() . '/inc/blog.php';
 require_once get_template_directory() . '/inc/autor.php';
+require_once get_template_directory() . '/inc/tlumaczenia.php';
 
 /**
  * Podstawowe wsparcie funkcji WordPressa.

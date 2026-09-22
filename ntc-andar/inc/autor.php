@@ -45,6 +45,18 @@ function ntc_autor_pola() {
 			'label' => 'ORCID albo inny profil naukowy',
 			'desc'  => 'Opcjonalnie. Pełny adres profilu.',
 		),
+		'ntc_imie_en'       => array(
+			'label' => 'Nazwa wyświetlana (EN)',
+			'desc'  => 'Wersja angielska - wypełnij, jeśli podpis ma się różnić, np. dla redakcji.',
+		),
+		'ntc_stanowisko_en' => array(
+			'label' => 'Stanowisko (EN)',
+			'desc'  => 'Wersja angielska stanowiska.',
+		),
+		'ntc_bio_en'        => array(
+			'label' => 'Biogram (EN)',
+			'desc'  => 'Wersja angielska opisu z pola "Informacje biograficzne".',
+		),
 	);
 }
 
@@ -106,6 +118,35 @@ add_action( 'personal_options_update', 'ntc_autor_pola_zapis' );
 add_action( 'edit_user_profile_update', 'ntc_autor_pola_zapis' );
 
 /**
+ * Imię, stanowisko albo biogram autora w bieżącym języku.
+ *
+ * Wersję angielską trzymają pola profilu z końcówką "_en". Puste pole
+ * zostawia tekst polski - lepiej pokazać polski biogram niż żaden.
+ *
+ * @param int    $autor_id Autor.
+ * @param string $co       "imie", "stanowisko" albo "bio".
+ * @return string
+ */
+function ntc_autor_tekst( $autor_id, $co ) {
+	if ( function_exists( 'ntc_is_en' ) && ntc_is_en() ) {
+		$en = (string) get_user_meta( $autor_id, 'ntc_' . $co . '_en', true );
+
+		if ( '' !== $en ) {
+			return $en;
+		}
+	}
+
+	switch ( $co ) {
+		case 'imie':
+			return (string) get_the_author_meta( 'display_name', $autor_id );
+		case 'stanowisko':
+			return (string) get_user_meta( $autor_id, 'ntc_stanowisko', true );
+		default:
+			return (string) get_the_author_meta( 'description', $autor_id );
+	}
+}
+
+/**
  * Komplet danych autora wpisu.
  *
  * @param int $post_id Wpis; domyślnie bieżący.
@@ -129,11 +170,11 @@ function ntc_autor( $post_id = 0 ) {
 	return array(
 		'id'         => $autor_id,
 		'zespol'     => 'zespol' === get_user_meta( $autor_id, 'ntc_typ_autora', true ),
-		'imie'       => get_the_author_meta( 'display_name', $autor_id ),
-		'stanowisko' => (string) get_user_meta( $autor_id, 'ntc_stanowisko', true ),
-		'bio'        => (string) get_the_author_meta( 'description', $autor_id ),
+		'imie'       => ntc_autor_tekst( $autor_id, 'imie' ),
+		'stanowisko' => ntc_autor_tekst( $autor_id, 'stanowisko' ),
+		'bio'        => ntc_autor_tekst( $autor_id, 'bio' ),
 		'foto'       => ntc_autor_foto( $autor_id, 160 ),
-		'inicjaly'   => ntc_autor_inicjaly( get_the_author_meta( 'display_name', $autor_id ) ),
+		'inicjaly'   => ntc_autor_inicjaly( ntc_autor_tekst( $autor_id, 'imie' ) ),
 		'url'        => get_author_posts_url( $autor_id ),
 		'profile'    => array_values( array_unique( $profile ) ),
 	);
@@ -427,9 +468,9 @@ function ntc_autor_schema() {
 		array(
 			'@type'       => $zespol ? 'Organization' : 'Person',
 			'@id'         => ntc_autor_schema_id( $autor_id ),
-			'name'        => ntc_schema_tekst( get_the_author_meta( 'display_name', $autor_id ) ),
-			'jobTitle'    => $zespol ? '' : get_user_meta( $autor_id, 'ntc_stanowisko', true ),
-			'description' => ntc_schema_tekst( get_the_author_meta( 'description', $autor_id ) ),
+			'name'        => ntc_schema_tekst( ntc_autor_tekst( $autor_id, 'imie' ) ),
+			'jobTitle'    => $zespol ? '' : ntc_autor_tekst( $autor_id, 'stanowisko' ),
+			'description' => ntc_schema_tekst( ntc_autor_tekst( $autor_id, 'bio' ) ),
 			'image'       => ntc_autor_foto( $autor_id, 240 ),
 			'url'         => get_author_posts_url( $autor_id ),
 			'sameAs'      => array_values( $profile ),
