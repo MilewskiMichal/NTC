@@ -241,7 +241,7 @@ return array(
 	'form.lyophilised'         => 'lyophilised powder',
 
 	'notfound.title'           => 'Not finding what you need?',
-	'notfound.text'            => 'If the substance you are looking for is not on the list, get in touch. We run dedicated sourcing worldwide.',
+	'notfound.text'            => 'If the substance you are looking for is not on the list, get in touch.',
 	'notfound.cta'             => 'Ask about a substance',
 
 	'machines.label'           => 'Machinery and equipment',

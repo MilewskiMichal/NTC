@@ -243,7 +243,7 @@ return array(
 	'form.lyophilised'         => 'proszek liofilizowany',
 
 	'notfound.title'           => 'Nie znalazłeś tego, czego szukasz?',
-	'notfound.text'            => 'Jeśli na liście nie ma substancji, której potrzebujesz - skontaktuj się z nami. Realizujemy dedykowane poszukiwania z całego świata.',
+	'notfound.text'            => 'Jeśli na liście nie ma substancji, której potrzebujesz - skontaktuj się z nami.',
 	'notfound.cta'             => 'Zapytaj o substancję',
 
 	'machines.label'           => 'Maszyny i urządzenia',
