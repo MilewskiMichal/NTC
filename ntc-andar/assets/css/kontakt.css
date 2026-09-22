@@ -349,11 +349,16 @@ body.page-kontakt {
 	align-items: stretch;
 }
 
+/* Wysokość bierze się z kolumny obok, a nie ze stałej proporcji - przy 4:3
+   mapa była wyraźnie wyższa od dwóch kafelków i pod nimi zostawał pusty pas.
+   min-height jest zapasem na wypadek, gdyby kafelków ubyło: mapa nie ma
+   własnej zawartości, więc bez niego mogłaby się zupełnie spłaszczyć. */
 .map-frame {
 	background: var(--line-100);
 	border-radius: 20px;
 	overflow: hidden;
-	aspect-ratio: 4 / 3;
+	height: 100%;
+	min-height: 300px;
 	position: relative;
 	border: 1px solid #dde6ed;
 }
@@ -540,6 +545,15 @@ body.page-kontakt {
 	.map-grid,
 	.quick-cta {
 		grid-template-columns: 1fr;
+	}
+
+	/* W jednej kolumnie mapa stoi nad kafelkami i nie ma się do czego
+	   dociągnąć, więc wraca stała proporcja. Zapas wysokości jest tu zbędny,
+	   a przy wąskim ekranie przykrywałby tę proporcję. */
+	.map-frame {
+		height: auto;
+		min-height: 0;
+		aspect-ratio: 4 / 3;
 	}
 
 	.contact-info,
