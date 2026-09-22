@@ -54,6 +54,36 @@ function ntc_block_img( $attrs, $fallback, $size = 'large' ) {
  * @param string $size  Rozmiar z biblioteki mediów.
  * @return string Pusty ciąg, gdy blok nie ma obrazka.
  */
+/**
+ * Klasa i styl kadrowania dla znacznika img.
+ *
+ * Zwraca gotowy fragment atrybutów - klasę "--zmiesc" dla logotypów, które
+ * nie mogą być przycinane, i object-position, gdy redakcja wskazała, która
+ * część zdjęcia ma zostać w ramce.
+ *
+ * @param array  $attrs Atrybuty bloku.
+ * @param string $klasa Podstawowa klasa obrazka.
+ * @return string
+ */
+function ntc_img_kadr( $attrs, $klasa ) {
+	$klasy = $klasa;
+
+	if ( 'contain' === ntc_a( $attrs, 'imageFit' ) ) {
+		$klasy .= ' ntc-img--zmiesc';
+	}
+
+	$out = trim( $klasy ) ? ' class="' . esc_attr( trim( $klasy ) ) . '"' : '';
+	$pos = trim( (string) ntc_a( $attrs, 'imagePos' ) );
+
+	// Tylko wartości w rodzaju "50% 20%" albo "center top" - nic, co dałoby
+	// się przemycić jako dowolny CSS.
+	if ( $pos && preg_match( '/^[a-z0-9.% ]{1,40}$/i', $pos ) ) {
+		$out .= ' style="object-position:' . esc_attr( $pos ) . '"';
+	}
+
+	return $out;
+}
+
 function ntc_media_url( $attrs, $size = 'large' ) {
 	$id = (int) ntc_a( $attrs, 'imageId', 0 );
 
@@ -286,6 +316,16 @@ function ntc_block_definitions() {
 		'imageId'  => array( 'type' => 'number' ),
 		'imageUrl' => array( 'type' => 'string' ),
 		'imageAlt' => array( 'type' => 'string' ),
+		// Logotypy i certyfikaty muszą się zmieścić w całości, zdjęcia - wypełnić
+		// kadr. Punkt kadrowania decyduje, która część zdjęcia zostaje w ramce.
+		'imageFit' => array(
+			'type'    => 'string',
+			'default' => 'cover',
+		),
+		'imagePos' => array(
+			'type'    => 'string',
+			'default' => '',
+		),
 	);
 
 	return array(
@@ -823,6 +863,61 @@ function ntc_hero_lines( $count, $box, $stroke, $class ) {
 }
 
 /** Hero strony głównej. */
+/**
+ * Geometria zdjęcia w kształcie na nagłówku strony głównej.
+ *
+ * SVG kadruje zdjęcie tylko do środka albo do krawędzi, a nie do dowolnego
+ * punktu. Przy panoramicznym kadrze z obiektem z boku (kapsułka po prawej
+ * stronie zdjęcia) środek ucinał połowę obiektu, a krawędź - jego czubek.
+ * Dlatego przy ustawionym punkcie kadrowania liczymy położenie zdjęcia sami,
+ * tak samo jak robi to object-position w CSS: procent wolnego miejsca.
+ *
+ * @param array $attrs Atrybuty bloku.
+ * @return array{x:float,y:float,w:float,h:float,par:string}
+ */
+function ntc_hero_kadr( $attrs ) {
+	$domyslny = array( 'x' => -15, 'y' => -15, 'w' => 450, 'h' => 450, 'par' => 'xMidYMid slice' );
+	$pos      = trim( (string) ntc_a( $attrs, 'imagePos' ) );
+	$id       = (int) ntc_a( $attrs, 'imageId', 0 );
+
+	if ( ! $pos || ! $id ) {
+		return $domyslny;
+	}
+
+	$src = wp_get_attachment_image_src( $id, 'large' );
+
+	if ( ! $src || empty( $src[1] ) || empty( $src[2] ) ) {
+		return $domyslny;
+	}
+
+	$slowa = array( 'left' => 0, 'top' => 0, 'center' => 50, 'right' => 100, 'bottom' => 100 );
+	$osie  = array();
+
+	foreach ( preg_split( '/\s+/', strtolower( $pos ) ) as $czesc ) {
+		if ( isset( $slowa[ $czesc ] ) ) {
+			$osie[] = $slowa[ $czesc ];
+		} elseif ( preg_match( '/^(\d{1,3}(?:\.\d+)?)%$/', $czesc, $m ) ) {
+			$osie[] = min( 100, (float) $m[1] );
+		}
+	}
+
+	$fx = isset( $osie[0] ) ? $osie[0] / 100 : 0.5;
+	$fy = isset( $osie[1] ) ? $osie[1] / 100 : 0.5;
+
+	// Skala "cover" dla kwadratu 450 x 450, w którym siedzi kształt.
+	$skala = max( 450 / $src[1], 450 / $src[2] );
+	$w     = $src[1] * $skala;
+	$h     = $src[2] * $skala;
+
+	return array(
+		'x'   => round( -15 + ( 450 - $w ) * $fx, 2 ),
+		'y'   => round( -15 + ( 450 - $h ) * $fy, 2 ),
+		'w'   => round( $w, 2 ),
+		'h'   => round( $h, 2 ),
+		'par' => 'none',
+	);
+}
+
 function ntc_render_hero( $attrs ) {
 	$rings = array(
 		array( 'fill' => 'none',                   'stroke' => 'rgba(27,191,168,0.12)',  'w' => '1',   'dash' => '' ),
@@ -831,8 +926,9 @@ function ntc_render_hero( $attrs ) {
 		array( 'fill' => 'rgba(255,255,255,0.06)', 'stroke' => 'rgba(255,255,255,0.30)', 'w' => '1.5', 'dash' => '' ),
 	);
 
-	$img = ntc_block_img( $attrs, 'hero' );
-	$alt = ntc_a( $attrs, 'imageAlt', ntc_raw( 'hero.img_alt' ) );
+	$img  = ntc_block_img( $attrs, 'hero' );
+	$alt  = ntc_a( $attrs, 'imageAlt', ntc_raw( 'hero.img_alt' ) );
+	$kadr = ntc_hero_kadr( $attrs );
 
 	ob_start();
 	?>
@@ -892,8 +988,9 @@ function ntc_render_hero( $attrs ) {
 							<?php echo $ring['dash'] ? 'stroke-dasharray="' . esc_attr( $ring['dash'] ) . '"' : ''; ?> />
 					<?php endforeach; ?>
 					<image href="<?php echo esc_url( $img ); ?>" xlink:href="<?php echo esc_url( $img ); ?>"
-						x="-15" y="-15" width="450" height="450"
-						clip-path="url(#ntcBlobClip)" preserveAspectRatio="xMidYMid slice" />
+						x="<?php echo esc_attr( $kadr['x'] ); ?>" y="<?php echo esc_attr( $kadr['y'] ); ?>"
+						width="<?php echo esc_attr( $kadr['w'] ); ?>" height="<?php echo esc_attr( $kadr['h'] ); ?>"
+						clip-path="url(#ntcBlobClip)" preserveAspectRatio="<?php echo esc_attr( $kadr['par'] ); ?>" />
 					<path d="<?php echo esc_attr( NTC_BLOB_PATH ); ?>" fill="url(#ntcBlobGrad)" clip-path="url(#ntcBlobClip)" />
 				</svg>
 			</div>
@@ -987,7 +1084,7 @@ function ntc_render_prose( $attrs, $content ) {
 				<?php if ( $foto ) : ?>
 					<?php // Zdjęcie po tekście w kodzie: czytnik ekranu dostaje najpierw treść. ?>
 					<div class="prose-media">
-						<img src="<?php echo esc_url( $foto ); ?>"
+						<img<?php echo ntc_img_kadr( $attrs, '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> src="<?php echo esc_url( $foto ); ?>"
 							alt="<?php echo esc_attr( ntc_a( $attrs, 'imageAlt', ntc_a( $attrs, 'label' ) ) ); ?>" loading="lazy" />
 					</div>
 				<?php endif; ?>
@@ -1550,7 +1647,7 @@ function ntc_render_category( $attrs ) {
 					<?php endif; ?>
 				</div>
 				<div class="cat-media">
-					<img class="cat-img" src="<?php echo esc_url( ntc_block_img( $attrs, 'cat-' . $slug ) ); ?>"
+					<img<?php echo ntc_img_kadr( $attrs, 'cat-img' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> src="<?php echo esc_url( ntc_block_img( $attrs, 'cat-' . $slug ) ); ?>"
 						alt="<?php echo esc_attr( ntc_a( $attrs, 'imageAlt', ntc_a( $attrs, 'label' ) ) ); ?>" loading="lazy" />
 				</div>
 			</div>
@@ -1650,7 +1747,7 @@ function ntc_render_machines( $attrs ) {
 					<?php endif; ?>
 				</div>
 				<div class="cat-media">
-					<img class="cat-img" src="<?php echo esc_url( ntc_block_img( $attrs, 'cat-maszyny' ) ); ?>"
+					<img<?php echo ntc_img_kadr( $attrs, 'cat-img' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> src="<?php echo esc_url( ntc_block_img( $attrs, 'cat-maszyny' ) ); ?>"
 						alt="<?php echo esc_attr( ntc_a( $attrs, 'imageAlt', ntc_a( $attrs, 'label' ) ) ); ?>" loading="lazy" />
 				</div>
 			</div>
@@ -1717,7 +1814,7 @@ function ntc_render_contact_panel( $attrs ) {
 					?>
 					<?php if ( $foto ) : ?>
 						<div class="contact-info-media">
-							<img src="<?php echo esc_url( $foto ); ?>"
+							<img<?php echo ntc_img_kadr( $attrs, '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> src="<?php echo esc_url( $foto ); ?>"
 								alt="<?php echo esc_attr( ntc_a( $attrs, 'imageAlt' ) ); ?>" loading="lazy" />
 						</div>
 					<?php endif; ?>
@@ -1853,7 +1950,7 @@ function ntc_render_checklist( $attrs, $content ) {
 					<ul class="checklist-items"><?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render bloków potomnych. ?></ul>
 				</div>
 				<div class="checklist-media">
-					<img class="checklist-img" src="<?php echo esc_url( ntc_block_img( $attrs, 'cat-api' ) ); ?>"
+					<img<?php echo ntc_img_kadr( $attrs, 'checklist-img' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> src="<?php echo esc_url( ntc_block_img( $attrs, 'cat-api' ) ); ?>"
 						alt="<?php echo esc_attr( ntc_a( $attrs, 'imageAlt', ntc_a( $attrs, 'title' ) ) ); ?>" loading="lazy" />
 				</div>
 			</div>

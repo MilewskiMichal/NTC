@@ -2159,3 +2159,38 @@ a.contact-detail:hover {
 .ntc-entry-content li strong {
 	color: var(--navy-700);
 }
+
+/* --------------------------------------------- obrazek "zmieść w całości" */
+
+/* Logotypy i znaki certyfikatów nie mogą być przycinane jak zdjęcia - przy
+   object-fit: cover z okrągłego znaku Grass-Fed zostawał sam środek krowy.
+   W trybie "zmieść" obrazek mieści się w ramce w całości, a ramka dostaje
+   jasne tło i oddech, żeby znak nie dotykał krawędzi. Wysokość ramki zostaje
+   ta sama co przy zdjęciach, więc układ sekcji się nie zmienia. */
+img.ntc-img--zmiesc,
+.prose-media img.ntc-img--zmiesc,
+.cat-img.ntc-img--zmiesc,
+.checklist-img.ntc-img--zmiesc {
+	object-fit: contain;
+	object-position: center;
+	background: #fff;
+	padding: 28px;
+	box-sizing: border-box;
+}
+
+/* Logo nie potrzebuje ramki na całą wysokość sekcji - przy długim tekście
+   obok zostawał wysoki biały słup z małym znakiem pośrodku. Ramka logotypu
+   jest kwadratowa i stoi na wysokości środka tekstu. */
+.prose-media:has(> img.ntc-img--zmiesc),
+.cat-media:has(> img.ntc-img--zmiesc) {
+	align-items: center;
+	justify-content: center;
+}
+
+.prose-media img.ntc-img--zmiesc,
+.cat-img.ntc-img--zmiesc {
+	height: auto;
+	min-height: 0;
+	max-height: none;
+	aspect-ratio: 1 / 1;
+}

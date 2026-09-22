@@ -126,6 +126,42 @@
 					props.setAttributes( { imageAlt: value } );
 				}
 			} ),
+			el( SelectControl, {
+				label: 'Dopasowanie',
+				help: 'Logotypy i certyfikaty ustawiaj na "zmieść w całości" - inaczej zostaną przycięte.',
+				value: attrs.imageFit || 'cover',
+				options: [
+					{ label: 'Wypełnij ramkę (zdjęcia)', value: 'cover' },
+					{ label: 'Zmieść w całości (logotypy)', value: 'contain' }
+				],
+				onChange: function ( value ) {
+					props.setAttributes( { imageFit: value } );
+				}
+			} ),
+			el( SelectControl, {
+				label: 'Punkt kadrowania',
+				help: 'Która część zdjęcia ma zostać w ramce, gdy trzeba je przyciąć.',
+				value: attrs.imagePos || '',
+				options: ( function () {
+					var opcje = [
+						{ label: 'Środek', value: '' },
+						{ label: 'Góra', value: 'center top' },
+						{ label: 'Dół', value: 'center bottom' },
+						{ label: 'Lewa strona', value: 'left center' },
+						{ label: 'Prawa strona', value: 'right center' }
+					];
+					// Punkt ustawiony dokładniej niż na liście (np. "92% 50%")
+					// musi być widoczny, inaczej pole wyglądałoby na puste.
+					var znany = opcje.some( function ( o ) { return o.value === ( attrs.imagePos || '' ); } );
+					if ( ! znany ) {
+						opcje.push( { label: 'Ustawiony ręcznie: ' + attrs.imagePos, value: attrs.imagePos } );
+					}
+					return opcje;
+				}() ),
+				onChange: function ( value ) {
+					props.setAttributes( { imagePos: value } );
+				}
+			} ),
 			! attrs.imageUrl
 				? el( 'p', { style: { color: '#757575', fontSize: '12px' } },
 					'Bez wybranego zdjęcia strona pokaże grafikę zastępczą w kolorach marki.' )
