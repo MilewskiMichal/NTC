@@ -247,7 +247,7 @@ function ntc_body_class( $classes ) {
 add_filter( 'body_class', 'ntc_body_class' );
 
 /**
- * Czy to strona typu landing, czyli kontakt: jasne hero i skrócona stopka.
+ * Czy to strona typu landing, czyli kontakt: jasne hero i własny arkusz stylów.
  *
  * Decyduje obecność bloku hero kontaktu, a nie nazwa szablonu - dzięki temu
  * układ idzie za treścią, którą redaktor faktycznie złożył.
