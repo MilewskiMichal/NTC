@@ -128,15 +128,20 @@
 	border-bottom-color: var(--teal-600);
 }
 
-/* Ujemny margines o wysokości odstępu sekcji wypycha ilustrację poza siatkę,
-   aż do górnej i dolnej krawędzi sekcji. Wysokość bierze się z kolumny tekstu,
-   więc zdjęcie zawsze kończy się dokładnie tam, gdzie sekcja. */
+/* Ujemny margines wypycha ilustrację poza siatkę, prawie do krawędzi sekcji.
+   Prawie, bo zdjęcie dociągnięte na styk wyglądało na rozciągnięte w pionie -
+   zostaje mały oddech nad i pod nim. Wysokość nadal bierze się z kolumny
+   tekstu, więc zdjęcie rośnie razem z listą punktów. */
+.checklist {
+	--checklist-oddech: 36px;
+}
+
 .checklist-media {
 	display: flex;
 	justify-content: center;
 	align-items: stretch;
-	margin-top: calc(-1 * var(--odstep-sekcji));
-	margin-bottom: calc(-1 * var(--odstep-sekcji));
+	margin-top: calc(-1 * var(--odstep-sekcji) + var(--checklist-oddech));
+	margin-bottom: calc(-1 * var(--odstep-sekcji) + var(--checklist-oddech));
 }
 
 /* Pierwsza sekcja pod nagłówkiem nie wychodzi do góry: zdjęcie dociągnięte do
@@ -158,6 +163,24 @@
 	min-height: 320px;
 	object-fit: cover;
 	border-radius: 20px;
+}
+
+/* Na szerokim ekranie zdjęcie jest wyjęte z przepływu i rozpięte na kolumnie.
+   Inaczej pionowe zdjęcie wnosiło do wiersza siatki swoją naturalną wysokość
+   i przy krótkim tekście (sekcja "Zespół") rozpychało całą sekcję w dół -
+   teraz o wysokości decyduje tekst, a zdjęcie się do niego dopasowuje. */
+@media (min-width: 901px) {
+	.checklist-media {
+		position: relative;
+		min-height: 320px;
+	}
+
+	.checklist-img {
+		position: absolute;
+		inset: 0;
+		margin: 0 auto;
+		min-height: 0;
+	}
 }
 
 /* ----------------------------------------------------------- pas z cytatem */

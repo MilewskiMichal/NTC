@@ -2137,6 +2137,23 @@ a.contact-detail:hover {
 	box-shadow: 0 8px 40px rgba(11, 42, 66, 0.12);
 }
 
+/* Zdjęcie bierze wysokość od tekstu obok, a nie odwrotnie. Pionowe zdjęcie
+   w przepływie wnosiło swoją naturalną wysokość i sztucznie wydłużało sekcję
+   (uścisk dłoni przy "Kompleksowej obsłudze"). Logotypy w trybie "zmieść"
+   mają własną, kwadratową ramkę, więc tej zasady nie dostają. */
+@media (min-width: 861px) {
+	.prose-media:not(:has(> img.ntc-img--zmiesc)) {
+		position: relative;
+		min-height: 320px;
+	}
+
+	.prose-media img:not(.ntc-img--zmiesc) {
+		position: absolute;
+		inset: 0;
+		min-height: 0;
+	}
+}
+
 @media (max-width: 860px) {
 	.prose--z-foto .prose-grid {
 		grid-template-columns: 1fr;
