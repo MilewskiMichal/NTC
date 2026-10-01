@@ -187,11 +187,33 @@ function ntc_company() {
 
 	// Numer w atrybucie href musi być bez spacji i nawiasów, inaczej część
 	// telefonów nie potraktuje go jako numeru.
-	$values['phone_href'] = 'tel:' . preg_replace( '/[^\d+]/', '', $values['phone'] );
+	$values['phone_href']  = 'tel:' . preg_replace( '/[^\d+]/', '', $values['phone'] );
+	$values['mobile_href'] = 'tel:' . preg_replace( '/[^\d+]/', '', $values['mobile'] );
 
 	$cache = $values;
 
 	return $cache;
+}
+
+/**
+ * Telefony firmy jako odnośniki - stacjonarny, a pod nim komórkowy.
+ *
+ * Komórka jest opcjonalna: puste pole w Dostosuj zostawia sam stacjonarny.
+ *
+ * @param string $sep Separator między numerami.
+ * @return string HTML.
+ */
+function ntc_company_phones_html( $sep = '<br />' ) {
+	$co    = ntc_company();
+	$linki = array();
+
+	foreach ( array( 'phone', 'mobile' ) as $pole ) {
+		if ( '' !== trim( $co[ $pole ] ) ) {
+			$linki[] = '<a href="' . esc_url( $co[ $pole . '_href' ] ) . '">' . esc_html( $co[ $pole ] ) . '</a>';
+		}
+	}
+
+	return implode( $sep, $linki );
 }
 
 /* ------------------------------------------------------- menu okruszkowe */

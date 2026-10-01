@@ -162,6 +162,23 @@
 					props.setAttributes( { imagePos: value } );
 				}
 			} ),
+			el( SelectControl, {
+				label: 'Kształt zdjęcia',
+				help: 'Stały kształt sprawia, że zdjęcia w kolejnych sekcjach mają podobną wielkość niezależnie od długości tekstu.',
+				value: attrs.imageShape || '',
+				options: [
+					{ label: 'Domyślny dla bloku', value: '' },
+					{ label: 'Pionowy prostokąt', value: 'pion' },
+					{ label: 'Wysoki i wąski', value: 'wysoki' },
+					{ label: 'Kwadrat', value: 'kwadrat' },
+					{ label: 'Poziomy', value: 'poziom' },
+					{ label: 'Całe zdjęcie, bez przycinania', value: 'naturalny' },
+					{ label: 'Do wysokości tekstu obok', value: 'wypelnij' }
+				],
+				onChange: function ( value ) {
+					props.setAttributes( { imageShape: value } );
+				}
+			} ),
 			! attrs.imageUrl
 				? el( 'p', { style: { color: '#757575', fontSize: '12px' } },
 					'Bez wybranego zdjęcia strona pokaże grafikę zastępczą w kolorach marki.' )
@@ -333,13 +350,28 @@
 					imagePanel( props, 'Zdjęcie obok tekstu' ),
 					el(
 						PanelBody,
-						{ title: 'Tło sekcji', initialOpen: false },
+						{ title: 'Układ sekcji', initialOpen: false },
 						el( ToggleControl, {
 							label: 'Jasnoniebieskie tło',
 							help: 'Włącz, gdy kilka bloków tekstowych stoi pod rząd i mają się od siebie odcinać.',
 							checked: !! props.attributes.alt,
 							onChange: function ( value ) {
 								props.setAttributes( { alt: value } );
+							}
+						} ),
+						el( ToggleControl, {
+							label: 'Zdjęcie po lewej stronie',
+							checked: 'left' === props.attributes.imageSide,
+							onChange: function ( value ) {
+								props.setAttributes( { imageSide: value ? 'left' : '' } );
+							}
+						} ),
+						el( ToggleControl, {
+							label: 'Ciąg dalszy sekcji powyżej',
+							help: 'Bez odstępu od poprzedniego bloku - np. drugie zdjęcie w tej samej sekcji. Ustaw to samo tło co wyżej.',
+							checked: !! props.attributes.continued,
+							onChange: function ( value ) {
+								props.setAttributes( { continued: value } );
 							}
 						} )
 					)
@@ -453,7 +485,10 @@
 					InspectorControls,
 					null,
 					imagePanel( props, 'Zdjęcie kafelka' ),
-					linkPanel( props, 'linkText', 'linkUrl', 'Odnośnik pod opisem' )
+					linkPanel( props, 'linkText', 'linkUrl', 'Odnośnik pod opisem' ),
+					// Kafelek dwóch kategorii (np. laktoferyna i colostrum) dostaje
+					// drugi odnośnik obok pierwszego.
+					linkPanel( props, 'link2Text', 'link2Url', 'Drugi odnośnik (opcjonalnie)' )
 				),
 				el(
 					'div',
@@ -1023,6 +1058,16 @@
 							help: 'Wpisz dokładnie tak, jak brzmi pozycja na liście tematów formularza.',
 							value: props.attributes.subject || '',
 							onChange: function ( v ) { props.setAttributes( { subject: v } ); }
+						} )
+					),
+					el(
+						PanelBody,
+						{ title: 'Tekst pod nagłówkiem', initialOpen: false },
+						el( ToggleControl, {
+							label: 'Każde zdanie w osobnym wierszu',
+							help: 'Wyłącz, gdy pierwsze zdanie jest za długie na jeden wiersz - tekst popłynie zwykłym akapitem.',
+							checked: false !== props.attributes.splitSentences,
+							onChange: function ( v ) { props.setAttributes( { splitSentences: v } ); }
 						} )
 					)
 				),

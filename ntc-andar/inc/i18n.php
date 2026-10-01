@@ -228,6 +228,24 @@ function ntc_register_query_vars( $vars ) {
 add_filter( 'query_vars', 'ntc_register_query_vars' );
 
 /**
+ * Język nie może zmieniać tego, co WordPress wyświetla.
+ *
+ * Zarejestrowany "lang" trafia do zapytania, a niepuste zapytanie na adresie
+ * głównym WordPress czyta jako listę wpisów - "/?lang=en" pokazywał blog
+ * zamiast strony głównej. Motyw czyta język z $_GET, więc z zapytania go
+ * usuwamy, zanim WordPress zdecyduje, co pokazać.
+ *
+ * @param array $vars Zmienne zapytania.
+ * @return array
+ */
+function ntc_strip_lang_query_var( $vars ) {
+	unset( $vars['lang'] );
+
+	return $vars;
+}
+add_filter( 'request', 'ntc_strip_lang_query_var' );
+
+/**
  * redirect_canonical potrafi zgubić ?lang= przy przekierowaniu na slash-końcowy
  * adres. Doklejamy go z powrotem.
  */

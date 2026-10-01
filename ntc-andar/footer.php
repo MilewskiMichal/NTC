@@ -78,7 +78,7 @@ $ntc_copy = (string) get_theme_mod( 'ntc_footer_copy', ntc_raw( 'footer.copy' ) 
 					<?php echo esc_html( $ntc_co['city'] ); ?>
 				</div>
 				<div class="footer-contact-item">
-					<a href="<?php echo esc_url( $ntc_co['phone_href'] ); ?>"><?php echo esc_html( $ntc_co['phone'] ); ?></a>
+					<?php echo ntc_company_phones_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- składane z esc_*. ?>
 				</div>
 				<div class="footer-contact-item">
 					<a href="mailto:<?php echo esc_attr( $ntc_co['email'] ); ?>"><?php echo esc_html( $ntc_co['email'] ); ?></a>

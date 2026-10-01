@@ -76,6 +76,15 @@ function ntc_typo_tekst( $tekst, $koniec = false ) {
 		);
 	}
 
+	// Zakresy liczb ("90-95%", "20% - 25%") nie rozpadają się na dwa wiersze.
+	// Po dywizie stoi niewidoczny łącznik słów (U+2060), a spacje wokół
+	// półpauzy w zakresie stają się twarde. Dotyczy obu języków.
+	$tekst = preg_replace( '/(\d)-(?=\d)/u', '$1-' . "\u{2060}", $tekst );
+	$tekst = preg_replace( '/(\d%?)[ \t]+([-\x{2013}])[ \t]+(?=\d)/u', '$1' . "\xc2\xa0" . '$2' . "\xc2\xa0", $tekst );
+
+	// Znak porównania trzyma się liczby: "> 95%" nie zostawia ">" na końcu wiersza.
+	$tekst = preg_replace( '/(&gt;|&lt;|[<>\x{2264}\x{2265}])[ \t]+(?=\d)/u', '$1' . "\xc2\xa0", $tekst );
+
 	if ( ! $koniec ) {
 		return $tekst;
 	}
@@ -117,6 +126,11 @@ function ntc_typo( $html ) {
 	// Wnętrze tych elementów to kod, nie tekst do składu.
 	$pomijane = 0;
 
+	// W komórkach tabel sieroty nie domykamy: kolumny są wąskie i sklejenie
+	// dwóch ostatnich słów robi z całej komórki jeden nierozerwalny ciąg
+	// ("zawartość 90-95%" zamiast "zawartość" i pod spodem "90-95%").
+	$w_komorce = 0;
+
 	// Ostatni fragment tekstowy w obrębie elementu dostaje regułę sieroty,
 	// więc trzeba wiedzieć, gdzie kończy się tekst przed kolejnym znacznikiem.
 	foreach ( $czesci as $i => $czesc ) {
@@ -129,6 +143,10 @@ function ntc_typo( $html ) {
 				++$pomijane;
 			} elseif ( preg_match( '#^<\s*/\s*(script|style|textarea)#i', $czesc ) && $pomijane > 0 ) {
 				--$pomijane;
+			} elseif ( preg_match( '#^<\s*t[dh]\b#i', $czesc ) ) {
+				++$w_komorce;
+			} elseif ( preg_match( '#^<\s*/\s*t[dh]\s*>#i', $czesc ) && $w_komorce > 0 ) {
+				--$w_komorce;
 			}
 
 			continue;
@@ -141,7 +159,7 @@ function ntc_typo( $html ) {
 		// Sierotę domykamy tylko wtedy, gdy zaraz potem element się zamyka -
 		// w środku zdania przerwanego znacznikiem <em> tekst leci dalej.
 		$nastepny = isset( $czesci[ $i + 1 ] ) ? $czesci[ $i + 1 ] : '';
-		$koniec   = '' === $nastepny || preg_match( '#^<\s*/#', $nastepny );
+		$koniec   = ! $w_komorce && ( '' === $nastepny || preg_match( '#^<\s*/#', $nastepny ) );
 
 		$czesci[ $i ] = ntc_typo_tekst( $czesc, (bool) $koniec );
 	}

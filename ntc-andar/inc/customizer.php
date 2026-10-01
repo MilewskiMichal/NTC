@@ -23,6 +23,7 @@ function ntc_company_fields() {
 		'ntc_co_street'   => array( 'label' => 'Ulica i numer',      'default' => 'ul. Hlonda 2A/90' ),
 		'ntc_co_city'     => array( 'label' => 'Kod i miasto',       'default' => '02-972 Warszawa' ),
 		'ntc_co_phone'    => array( 'label' => 'Telefon',            'default' => '+48 22 331 67 89' ),
+		'ntc_co_mobile'   => array( 'label' => 'Telefon komórkowy',  'default' => '+48 664 334 332' ),
 		'ntc_co_email'    => array( 'label' => 'E-mail',             'default' => 'biuro@ntcandar.com.pl' ),
 		'ntc_co_nip'      => array( 'label' => 'NIP',                'default' => '951-250-31-11' ),
 		'ntc_co_regon'    => array( 'label' => 'REGON',              'default' => '386321386' ),

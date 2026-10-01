@@ -817,13 +817,15 @@ img {
 	margin-top: 4px;
 }
 
+/* Wszystkie akapity "Kim jesteśmy" jednym stopniem pisma - pierwszy był
+   wcześniej większy, co wyglądało na przypadek, a nie na wyróżnienie. */
 .about-body .section-sub {
-	margin-bottom: 24px;
+	font-size: 15px;
+	margin-bottom: 18px;
 }
 
-.about-body .section-sub + .section-sub {
-	font-size: 15px;
-	margin-bottom: 36px;
+.about-body .about-figures {
+	margin-top: 36px;
 }
 
 .about-figures {
@@ -1056,6 +1058,13 @@ img {
 
 .offer-card:hover .offer-card-link {
 	gap: 10px;
+}
+
+/* Dwa odnośniki w jednym kafelku (laktoferyna i colostrum) stoją obok siebie. */
+.offer-card-links {
+	display: flex;
+	flex-wrap: wrap;
+	column-gap: 26px;
 }
 
 /* ------------------------------------------------------------- statystyki */
@@ -1484,6 +1493,21 @@ img {
 }
 
 a.contact-detail:hover {
+	color: var(--teal-400);
+}
+
+.contact-detail-phones {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 18px;
+}
+
+.contact-detail-phones a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.contact-detail-phones a:hover {
 	color: var(--teal-400);
 }
 
@@ -2210,4 +2234,146 @@ img.ntc-img--zmiesc,
 	min-height: 0;
 	max-height: none;
 	aspect-ratio: 1 / 1;
+}
+
+/* ------------------------------------------------ kształt kadru zdjęcia */
+
+/* Zdjęcie o stałym kształcie zamiast dopasowania do wysokości tekstu obok.
+   Klient chce, żeby zdjęcia w ofercie i na podstronach produktowych miały
+   podobną wielkość, niezależnie od tego, ile tekstu stoi obok. Zasady
+   z !important zdejmują pozycjonowanie absolutne i wysokości "od tekstu",
+   które bloki mają domyślnie. */
+.ntc-ksztalt {
+	position: static !important;
+	inset: auto !important;
+	width: 100%;
+	height: auto !important;
+	min-height: 0 !important;
+	max-height: none !important;
+	object-fit: cover;
+	display: block;
+}
+
+.ntc-ksztalt.ntc-ksztalt--pion {
+	aspect-ratio: 5 / 6;
+	max-width: 440px;
+}
+
+.ntc-ksztalt.ntc-ksztalt--wysoki {
+	aspect-ratio: 2 / 3;
+	max-width: 340px;
+}
+
+.ntc-ksztalt.ntc-ksztalt--kwadrat {
+	aspect-ratio: 1 / 1;
+	max-width: 440px;
+}
+
+.ntc-ksztalt.ntc-ksztalt--poziom {
+	aspect-ratio: 4 / 3;
+	max-width: 520px;
+}
+
+/* Cały kadr bez przycinania - np. kolaż maszyn. */
+.ntc-ksztalt.ntc-ksztalt--naturalny {
+	aspect-ratio: auto;
+	max-width: 420px;
+}
+
+/* Ramka zdjęcia o stałym kształcie stoi na środku wysokości tekstu i trzyma
+   się strony tekstu, zamiast odjeżdżać do krawędzi kolumny. */
+.prose-media:has(> .ntc-ksztalt),
+.cat-media:has(> .ntc-ksztalt),
+.checklist-media:has(> .ntc-ksztalt) {
+	position: static;
+	min-height: 0;
+	align-items: center;
+	align-self: center;
+	margin-top: 0;
+	margin-bottom: 0;
+	justify-content: flex-start;
+}
+
+.prose--foto-lewo .prose-media:has(> .ntc-ksztalt),
+.cat-section--alt .cat-media:has(> .ntc-ksztalt) {
+	justify-content: flex-end;
+}
+
+.checklist-media:has(> .ntc-ksztalt) {
+	justify-content: center;
+}
+
+/* Tekst i zdjęcie o stałym kształcie wyrównane do środka względem siebie -
+   krótszy z nich stoi na wysokości środka dłuższego. */
+.cat-grid:has(> .cat-media > .ntc-ksztalt),
+.prose-grid:has(> .prose-media > .ntc-ksztalt),
+.checklist-grid:has(> .checklist-media > .ntc-ksztalt) {
+	align-items: center;
+}
+
+.prose-tekst {
+	min-width: 0;
+}
+
+/* Kolumna zdjęcia o stałym kształcie ma szerokość zdjęcia, a tekst bierze
+   resztę. Przy kolumnach 1fr/1fr długi nagłówek (np. "pochodzenia
+   naturalnego" sklejone twardą spacją) rozpychał kolumnę tekstu i zdjęcie
+   wychodziło węższe niż w sąsiednich sekcjach. */
+@media (min-width: 901px) {
+	.cat-grid:has(> .cat-media > .ntc-ksztalt) {
+		grid-template-columns: minmax(0, 1fr) auto;
+	}
+
+	.cat-section--alt .cat-grid:has(> .cat-media > .ntc-ksztalt) {
+		grid-template-columns: auto minmax(0, 1fr);
+	}
+}
+
+@media (min-width: 861px) {
+	.prose--z-foto .prose-grid:has(> .prose-media > .ntc-ksztalt),
+	.checklist-grid:has(> .checklist-media > .ntc-ksztalt) {
+		grid-template-columns: minmax(0, 1fr) auto;
+	}
+
+	.prose--foto-lewo .prose-grid:has(> .prose-media > .ntc-ksztalt),
+	.checklist-grid--flip:has(> .checklist-media > .ntc-ksztalt) {
+		grid-template-columns: auto minmax(0, 1fr);
+	}
+}
+
+/* Zdjęcie po lewej stronie tekstu (blok tekstowy). */
+.prose--foto-lewo .prose-grid {
+	grid-template-columns: 1fr 1.4fr;
+}
+
+.prose--foto-lewo .prose-media {
+	order: -1;
+}
+
+/* Ciąg dalszy sekcji powyżej - ten sam kolor tła, mniejszy odstęp. */
+.prose--ciag {
+	padding-top: 0;
+	margin-top: calc(-0.4 * var(--odstep-sekcji));
+}
+
+@media (max-width: 860px) {
+	/* Na wąskim ekranie zdjęcie zawsze pod tekstem i na środku. */
+	.prose--foto-lewo .prose-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.prose--foto-lewo .prose-media {
+		order: 0;
+	}
+
+	.prose-media:has(> .ntc-ksztalt),
+	.cat-media:has(> .ntc-ksztalt),
+	.prose--foto-lewo .prose-media:has(> .ntc-ksztalt),
+	.cat-section--alt .cat-media:has(> .ntc-ksztalt) {
+		justify-content: center;
+	}
+
+	.prose--ciag {
+		margin-top: 0;
+	}
 }

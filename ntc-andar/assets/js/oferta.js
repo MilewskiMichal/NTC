@@ -105,11 +105,18 @@
 			}
 
 			function matching() {
-				var query = input.value.trim().toLowerCase();
+				// Każde wpisane słowo musi wystąpić gdziekolwiek w wierszu -
+				// "bacillus indie" znajduje szczep po rodzaju i kraju naraz.
+				var words = input.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
 
 				return rows.filter(function (row) {
-					// data-search jest już zlowercase'owany po stronie PHP.
-					return !query || row.getAttribute('data-search').indexOf(query) !== -1;
+					// data-search jest już zlowercase'owany po stronie PHP i ma
+					// drugą kopię bez polskich znaków.
+					var index = row.getAttribute('data-search');
+
+					return words.every(function (word) {
+						return index.indexOf(word) !== -1;
+					});
 				});
 			}
 

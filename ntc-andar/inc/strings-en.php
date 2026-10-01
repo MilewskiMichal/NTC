@@ -135,7 +135,7 @@ return array(
 	'form.subject'             => 'Enquiry subject',
 	'form.subject_choose'      => 'Choose a subject...',
 	'form.subject_other'       => 'Other',
-	'form.subjects_default'    => "Active ingredients (API)\nProbiotics and postbiotics\nLactoferrin\nColostrum\nMilk proteins\nCollagen\nMachines\nServices\nOther",
+	'form.subjects_default'    => "Active substances (API)\nProbiotics and postbiotics\nLactoferrin\nColostrum\nMilk proteins\nCollagen\nMachinery\nServices\nOther",
 	'form.consent'             => 'I consent to the processing of my personal data for the purpose of handling this enquiry, in accordance with the GDPR.',
 	'form.consent_req'         => 'I consent to the processing of my personal data for the purpose of handling this enquiry, in accordance with the GDPR. *',
 	'form.submit_ask'          => 'Request a quote',
@@ -232,7 +232,7 @@ return array(
 	'table.prev'               => 'Previous',
 	'table.next'               => 'Next',
 	'table.of'                 => 'of',
-	'table.search_ph'          => 'Search substance, country...',
+	'table.search_ph'          => 'Search…',
 	'table.count'              => 'items',
 	'table.no_results'         => 'No results for',
 

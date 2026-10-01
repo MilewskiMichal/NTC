@@ -70,6 +70,8 @@ function ntc_img_kadr( $attrs, $klasa ) {
 
 	if ( 'contain' === ntc_a( $attrs, 'imageFit' ) ) {
 		$klasy .= ' ntc-img--zmiesc';
+	} elseif ( in_array( ntc_a( $attrs, 'imageShape' ), ntc_img_ksztalty(), true ) ) {
+		$klasy .= ' ntc-ksztalt ntc-ksztalt--' . ntc_a( $attrs, 'imageShape' );
 	}
 
 	$out = trim( $klasy ) ? ' class="' . esc_attr( trim( $klasy ) ) . '"' : '';
@@ -82,6 +84,20 @@ function ntc_img_kadr( $attrs, $klasa ) {
 	}
 
 	return $out;
+}
+
+/**
+ * Kształty kadru do wyboru w edytorze.
+ *
+ * pion - pionowy prostokąt, podstawowy kadr sekcji oferty; wysoki - węższy
+ * i wyższy; kwadrat; poziom - zdjęcie leżące obok tekstu; naturalny - całe
+ * zdjęcie bez przycinania (np. kolaż). Puste pole zostawia dawne zachowanie:
+ * zdjęcie dopasowane do wysokości tekstu obok.
+ *
+ * @return string[]
+ */
+function ntc_img_ksztalty() {
+	return array( 'pion', 'wysoki', 'kwadrat', 'poziom', 'naturalny' );
 }
 
 function ntc_media_url( $attrs, $size = 'large' ) {
@@ -296,13 +312,28 @@ function ntc_table_cell( $row, $col ) {
 function ntc_row_search_index( $row ) {
 	$parts = array();
 
-	foreach ( array( 'name', 'cas', 'group', 'group_full', 'maker', 'origin', 'use', 'form', 'docs' ) as $key ) {
-		if ( ! empty( $row[ $key ] ) ) {
-			$parts[] = $row[ $key ];
+	// Wszystkie kolumny, jakie tabela umie pokazać - także numer kolekcji
+	// szczepu - niezależnie od tego, które są akurat włączone w bloku.
+	foreach ( array_merge( ntc_table_column_keys(), array( 'group_full' ) ) as $key ) {
+		if ( empty( $row[ $key ] ) || 'postbiotic' === $key ) {
+			continue;
 		}
+
+		$parts[] = $row[ $key ];
 	}
 
-	return mb_strtolower( implode( ' ', $parts ) );
+	// Kolumna postbiotyku pokazuje ptaszek, więc w indeksie stoi jej nazwa:
+	// wpisanie "postbiotyk" zostawia szczepy dostępne w tej wersji.
+	if ( ! empty( $row['postbiotic'] ) && in_array( mb_strtolower( trim( $row['postbiotic'] ) ), array( 'tak', 'yes', '1', 'tak.' ), true ) ) {
+		$parts[] = ntc_raw( 'table.postbiotic' );
+	}
+
+	$tekst = mb_strtolower( implode( ' ', $parts ) );
+
+	// Druga kopia bez polskich znaków: "zelandia" i "niemowlat" też trafiają.
+	$bez = remove_accents( $tekst );
+
+	return $bez === $tekst ? $tekst : $tekst . ' ' . $bez;
 }
 
 /**
@@ -323,6 +354,12 @@ function ntc_block_definitions() {
 			'default' => 'cover',
 		),
 		'imagePos' => array(
+			'type'    => 'string',
+			'default' => '',
+		),
+		// Stały kształt kadru zamiast dopasowania do wysokości tekstu - żeby
+		// zdjęcia w kolejnych sekcjach miały podobną wielkość (ntc_img_kadr).
+		'imageShape' => array(
 			'type'    => 'string',
 			'default' => '',
 		),
@@ -418,8 +455,10 @@ function ntc_block_definitions() {
 					'tag'      => $text,
 					'title'    => $text,
 					'text'     => $text,
-					'linkText' => $text,
-					'linkUrl'  => $text,
+					'linkText'  => $text,
+					'linkUrl'   => $text,
+					'link2Text' => $text,
+					'link2Url'  => $text,
 				),
 				$img
 			),
@@ -715,10 +754,14 @@ function ntc_block_definitions() {
 			'title'      => 'NTC - Formularz pod kategorię',
 			'icon'       => 'email-alt',
 			'attributes' => array(
-				'label'   => $text,
-				'title'   => $text,
-				'sub'     => $text,
-				'subject' => $text,
+				'label'          => $text,
+				'title'          => $text,
+				'sub'            => $text,
+				'subject'        => $text,
+				'splitSentences' => array(
+					'type'    => 'boolean',
+					'default' => true,
+				),
 			),
 			'render'     => 'ntc_render_product_form',
 		),
@@ -728,10 +771,19 @@ function ntc_block_definitions() {
 			'icon'       => 'text-page',
 			'attributes' => array_merge(
 				array(
-					'label' => $text,
-					'title' => $text,
-					'lead'  => $text,
-					'alt'   => array(
+					'label'     => $text,
+					'title'     => $text,
+					'lead'      => $text,
+					'alt'       => array(
+						'type'    => 'boolean',
+						'default' => false,
+					),
+					// "left" stawia zdjęcie po lewej stronie tekstu.
+					'imageSide' => $text,
+					// Ciąg dalszy sekcji powyżej: bez górnego odstępu, tak że dwa
+					// bloki o tym samym tle czytają się jak jedna sekcja z dwoma
+					// zdjęciami (np. laktoferyna, białka mleka).
+					'continued' => array(
 						'type'    => 'boolean',
 						'default' => false,
 					),
@@ -1064,22 +1116,33 @@ function ntc_render_prose( $attrs, $content ) {
 	$alt   = ntc_a( $attrs, 'alt', false );
 	$foto  = ntc_media_url( $attrs );
 
+	$klasy  = 'section prose';
+	$klasy .= $alt ? ' prose--alt' : '';
+	$klasy .= $foto ? ' prose--z-foto' : '';
+	$klasy .= ( $foto && 'left' === ntc_a( $attrs, 'imageSide' ) ) ? ' prose--foto-lewo' : '';
+	$klasy .= ntc_a( $attrs, 'continued', false ) ? ' prose--ciag' : '';
+
 	ob_start();
 	?>
-	<section class="section prose<?php echo $alt ? ' prose--alt' : ''; ?><?php echo $foto ? ' prose--z-foto' : ''; ?>"<?php echo $kotwa ? ' id="' . esc_attr( $kotwa ) . '"' : ''; ?>>
+	<section class="<?php echo esc_attr( $klasy ); ?>"<?php echo $kotwa ? ' id="' . esc_attr( $kotwa ) . '"' : ''; ?>>
 		<div class="section-inner">
-			<?php if ( ntc_a( $attrs, 'label' ) ) : ?>
-				<div class="section-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
-			<?php endif; ?>
-			<?php if ( ntc_a( $attrs, 'title' ) ) : ?>
-				<h2 class="section-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h2>
-			<?php endif; ?>
-			<?php if ( ntc_a( $attrs, 'lead' ) ) : ?>
-				<p class="section-sub prose-lead"><?php echo esc_html( ntc_a( $attrs, 'lead' ) ); ?></p>
-			<?php endif; ?>
+			<?php
+			// Przy zdjęciu nagłówek stoi w kolumnie tekstu, więc zdjęcie zaczyna
+			// się na wysokości nadtytułu, a nie dopiero pod nagłówkiem.
+			if ( ! $foto ) {
+				ntc_prose_head( $attrs );
+			}
+			?>
 			<div class="prose-grid">
-				<div class="ntc-entry-content">
-					<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render bloków potomnych. ?>
+				<div class="prose-tekst">
+					<?php
+					if ( $foto ) {
+						ntc_prose_head( $attrs );
+					}
+					?>
+					<div class="ntc-entry-content">
+						<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render bloków potomnych. ?>
+					</div>
 				</div>
 				<?php if ( $foto ) : ?>
 					<?php // Zdjęcie po tekście w kodzie: czytnik ekranu dostaje najpierw treść. ?>
@@ -1093,6 +1156,25 @@ function ntc_render_prose( $attrs, $content ) {
 	</section>
 	<?php
 	return ob_get_clean();
+}
+
+/**
+ * Nadtytuł, nagłówek i zdanie wprowadzające bloku tekstowego.
+ *
+ * @param array $attrs Atrybuty bloku.
+ */
+function ntc_prose_head( $attrs ) {
+	?>
+	<?php if ( ntc_a( $attrs, 'label' ) ) : ?>
+		<div class="section-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
+	<?php endif; ?>
+	<?php if ( ntc_a( $attrs, 'title' ) ) : ?>
+		<h2 class="section-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h2>
+	<?php endif; ?>
+	<?php if ( ntc_a( $attrs, 'lead' ) ) : ?>
+		<p class="section-sub prose-lead"><?php echo esc_html( ntc_a( $attrs, 'lead' ) ); ?></p>
+	<?php endif; ?>
+	<?php
 }
 
 /**
@@ -1126,12 +1208,16 @@ function ntc_render_product_form( $attrs ) {
 					// Klient prosił, żeby osobne zdania stawały w osobnych
 					// wierszach. Łamiemy po kropce kończącej zdanie, a nie po
 					// każdej - inaczej skróty w rodzaju "m.in." rozbijałyby wiersz.
-					$zdania = preg_split(
-						'/(?<=[.!?])\s+(?=[A-ZĄĆĘŁŃÓŚŹŻ])/u',
-						(string) ntc_a( $attrs, 'sub' ),
-						-1,
-						PREG_SPLIT_NO_EMPTY
-					);
+					// Gdy pierwsze zdanie i tak nie mieści się w wierszu, redakcja
+					// wyłącza podział i tekst płynie zwykłym akapitem.
+					$zdania = ntc_a( $attrs, 'splitSentences', true )
+						? preg_split(
+							'/(?<=[.!?])\s+(?=[A-ZĄĆĘŁŃÓŚŹŻ])/u',
+							(string) ntc_a( $attrs, 'sub' ),
+							-1,
+							PREG_SPLIT_NO_EMPTY
+						)
+						: array( (string) ntc_a( $attrs, 'sub' ) );
 					?>
 					<?php foreach ( $zdania as $zdanie ) : ?>
 						<p class="section-sub"><?php echo esc_html( $zdanie ); ?></p>
@@ -1164,7 +1250,9 @@ function ntc_render_features( $attrs, $content ) {
 					<div class="section-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
 					<h2 class="section-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h2>
 				</div>
-				<p class="why-intro"><?php echo esc_html( ntc_a( $attrs, 'intro' ) ); ?></p>
+				<?php if ( ntc_a( $attrs, 'intro' ) ) : ?>
+					<p class="why-intro"><?php echo esc_html( ntc_a( $attrs, 'intro' ) ); ?></p>
+				<?php endif; ?>
 			</div>
 			<div class="features-grid"><?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render bloków potomnych. ?></div>
 		</div>
@@ -1241,10 +1329,25 @@ function ntc_render_offer_card( $attrs ) {
 			<?php endif; ?>
 			<h3 class="offer-card-title"><?php echo esc_html( ntc_a( $attrs, 'title' ) ); ?></h3>
 			<p class="offer-card-text"><?php echo esc_html( ntc_a( $attrs, 'text' ) ); ?></p>
-			<?php if ( ntc_a( $attrs, 'linkText' ) ) : ?>
-				<a href="<?php echo esc_url( ntc_a( $attrs, 'linkUrl', ntc_page_url( 'kontakt' ) ) ); ?>" class="offer-card-link">
-					<?php echo esc_html( ntc_a( $attrs, 'linkText' ) ); ?> <span aria-hidden="true">&rarr;</span>
-				</a>
+			<?php
+			// Kafelek zbierający dwie kategorie (laktoferyna i colostrum) ma dwa
+			// odnośniki obok siebie zamiast jednego "dowiedz się więcej".
+			$odnosniki = array();
+
+			foreach ( array( '', '2' ) as $n ) {
+				if ( ntc_a( $attrs, "link{$n}Text" ) ) {
+					$odnosniki[] = array( ntc_a( $attrs, "link{$n}Text" ), ntc_a( $attrs, "link{$n}Url", ntc_page_url( 'kontakt' ) ) );
+				}
+			}
+			?>
+			<?php if ( $odnosniki ) : ?>
+				<div class="offer-card-links">
+					<?php foreach ( $odnosniki as $odnosnik ) : ?>
+						<a href="<?php echo esc_url( $odnosnik[1] ); ?>" class="offer-card-link">
+							<?php echo esc_html( $odnosnik[0] ); ?> <span aria-hidden="true">&rarr;</span>
+						</a>
+					<?php endforeach; ?>
+				</div>
 			<?php endif; ?>
 		</div>
 	</article>
@@ -1444,6 +1547,8 @@ function ntc_render_step( $attrs ) {
 
 /** Sekcja kontaktowa strony głównej. */
 function ntc_render_contact( $attrs ) {
+	$co = ntc_company();
+
 	ob_start();
 	?>
 	<section class="section contact" id="kontakt">
@@ -1463,7 +1568,9 @@ function ntc_render_contact( $attrs ) {
 			<div class="contact-head">
 				<div class="section-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
 				<h2 class="section-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h2>
-				<p class="contact-head-sub"><?php echo esc_html( ntc_a( $attrs, 'sub' ) ); ?></p>
+				<?php if ( ntc_a( $attrs, 'sub' ) ) : ?>
+					<p class="contact-head-sub"><?php echo esc_html( ntc_a( $attrs, 'sub' ) ); ?></p>
+				<?php endif; ?>
 			</div>
 
 			<div class="contact-grid">
@@ -1472,18 +1579,32 @@ function ntc_render_contact( $attrs ) {
 						<div class="contact-blob-shape"></div>
 						<div class="contact-blob-shape-2"></div>
 						<div class="contact-blob-img">
-							<img src="<?php echo esc_url( ntc_block_img( $attrs, 'contact' ) ); ?>"
+							<img<?php echo ntc_img_kadr( array( 'imagePos' => ntc_a( $attrs, 'imagePos' ) ), '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> src="<?php echo esc_url( ntc_block_img( $attrs, 'contact' ) ); ?>"
 								alt="<?php echo esc_attr( ntc_a( $attrs, 'imageAlt' ) ); ?>" loading="lazy" />
 						</div>
 					</div>
 				</div>
 
 				<div>
+					<?php ntc_the_contact_form( 'home' ); ?>
+
 					<?php
-					// Adres, telefon i e-mail stały tu wcześniej pod formularzem, ale
-					// stopka zaczyna się kilka pikseli niżej i powtarza je co do znaku.
-					ntc_the_contact_form( 'home' );
+					// Klient chce mieć pod formularzem oba telefony - stacjonarny i
+					// komórkowy - mimo że stopka zaczyna się tuż niżej.
 					?>
+					<div class="contact-details">
+						<div class="contact-detail">
+							<?php ntc_the_icon( 'pin' ); ?>
+							<span><?php echo esc_html( $co['street'] . ', ' . $co['city'] ); ?></span>
+						</div>
+						<div class="contact-detail">
+							<?php ntc_the_icon( 'phone' ); ?>
+							<span class="contact-detail-phones"><?php echo ntc_company_phones_html( ' ' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- składane z esc_*. ?></span>
+						</div>
+						<a class="contact-detail" href="mailto:<?php echo esc_attr( $co['email'] ); ?>">
+							<?php ntc_the_icon( 'mail' ); ?><span><?php echo esc_html( $co['email'] ); ?></span>
+						</a>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -1634,9 +1755,10 @@ function ntc_render_category( $attrs ) {
 				<div class="cat-text">
 					<div class="section-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
 					<h2 class="section-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h2>
-					<p class="section-sub"><?php echo esc_html( ntc_a( $attrs, 'p1' ) ); ?></p>
+					<?php // Opisy przechodzą przez ntc_rich: pogrubienie z edytora ma być pogrubieniem, a nie widocznym znacznikiem. ?>
+					<p class="section-sub"><?php echo ntc_rich( ntc_a( $attrs, 'p1' ) ); ?></p>
 					<?php if ( ntc_a( $attrs, 'p2' ) ) : ?>
-						<p class="section-sub"><?php echo esc_html( ntc_a( $attrs, 'p2' ) ); ?></p>
+						<p class="section-sub"><?php echo ntc_rich( ntc_a( $attrs, 'p2' ) ); ?></p>
 					<?php endif; ?>
 
 					<?php if ( ntc_a( $attrs, 'ctaText' ) && ntc_a( $attrs, 'ctaUrl' ) ) : ?>
@@ -1647,7 +1769,19 @@ function ntc_render_category( $attrs ) {
 					<?php endif; ?>
 				</div>
 				<div class="cat-media">
-					<img<?php echo ntc_img_kadr( $attrs, 'cat-img' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> src="<?php echo esc_url( ntc_block_img( $attrs, 'cat-' . $slug ) ); ?>"
+					<?php
+					// Zdjęcia kategorii mają jeden kształt - pionowy prostokąt - żeby
+					// w ofercie każdy surowiec miał zdjęcie podobnej wielkości. Inny
+					// kształt (np. kwadrat przy maszynach) ustawia się w edytorze,
+					// a "wypelnij" przywraca dopasowanie do wysokości tekstu.
+					$kadr_attrs = $attrs;
+					if ( ! ntc_a( $attrs, 'imageShape' ) ) {
+						$kadr_attrs['imageShape'] = 'pion';
+					} elseif ( 'wypelnij' === $attrs['imageShape'] ) {
+						$kadr_attrs['imageShape'] = '';
+					}
+					?>
+					<img<?php echo ntc_img_kadr( $kadr_attrs, 'cat-img' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> src="<?php echo esc_url( ntc_block_img( $attrs, 'cat-' . $slug ) ); ?>"
 						alt="<?php echo esc_attr( ntc_a( $attrs, 'imageAlt', ntc_a( $attrs, 'label' ) ) ); ?>" loading="lazy" />
 				</div>
 			</div>
@@ -1781,7 +1915,7 @@ function ntc_render_contact_panel( $attrs ) {
 		// Dzielnica wypadła z adresu na prośbę klienta - w korespondencji i tak
 		// jej nie używają, a wiersz robił się przez nią trzyczłonowy.
 		array( 'pin',   ntc_raw( 'contactpage.row_address' ), esc_html( $co['name'] ) . '<br />' . esc_html( $co['street'] ) . '<br />' . esc_html( $co['city'] ) ),
-		array( 'phone', ntc_raw( 'contactpage.row_phone' ), '<a href="' . esc_url( $co['phone_href'] ) . '">' . esc_html( $co['phone'] ) . '</a>' ),
+		array( 'phone', ntc_raw( 'contactpage.row_phone' ), ntc_company_phones_html() ),
 		array( 'mail',  ntc_raw( 'contactpage.row_email' ), '<a href="mailto:' . esc_attr( $co['email'] ) . '">' . esc_html( $co['email'] ) . '</a>' ),
 		array( 'clock', ntc_raw( 'contactpage.row_hours' ), esc_html( ntc_raw( 'contactpage.hours_value' ) ) ),
 		array( 'doc',   ntc_raw( 'contactpage.row_company' ), 'NIP: ' . esc_html( $co['nip'] ) . ' &middot; REGON: ' . esc_html( $co['regon'] ) . '<br />KRS: ' . esc_html( $co['krs'] ) ),
@@ -1795,7 +1929,9 @@ function ntc_render_contact_panel( $attrs ) {
 
 				<div class="contact-info">
 					<div class="contact-info-title"><?php echo esc_html( ntc_a( $attrs, 'infoTitle' ) ); ?></div>
-					<div class="contact-info-sub"><?php echo esc_html( ntc_a( $attrs, 'infoSub' ) ); ?></div>
+					<?php if ( ntc_a( $attrs, 'infoSub' ) ) : ?>
+						<div class="contact-info-sub"><?php echo esc_html( ntc_a( $attrs, 'infoSub' ) ); ?></div>
+					<?php endif; ?>
 
 					<?php foreach ( $rows as $row ) : ?>
 						<div class="contact-row">

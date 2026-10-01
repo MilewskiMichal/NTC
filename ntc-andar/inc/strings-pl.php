@@ -234,7 +234,7 @@ return array(
 	'table.prev'               => 'Poprzednia',
 	'table.next'               => 'Następna',
 	'table.of'                 => 'z',
-	'table.search_ph'          => 'Szukaj substancji, kraju...',
+	'table.search_ph'          => 'Szukaj…',
 	'table.count'              => 'pozycji',
 	'table.no_results'         => 'Brak wyników dla',
 
