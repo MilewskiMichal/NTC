@@ -48,6 +48,9 @@ function ntc_typo_slowa() {
  */
 const NTC_TYPO_MAX_SIEROTA = 12;
 
+/** Najdłuższa para ostatnich słów (w znakach), którą wolno skleić. */
+const NTC_TYPO_MAX_PARA = 20;
+
 /**
  * Wstawia twarde spacje w pojedynczym fragmencie tekstu.
  *
@@ -91,14 +94,20 @@ function ntc_typo_tekst( $tekst, $koniec = false ) {
 
 	// Ostatnie dwa słowa razem, żeby końcówka zdania nie spadła sama do
 	// nowego wiersza. Tylko gdy ostatnie słowo jest krótkie.
+	// Para nie może być za długa: dwa długie wyrazy sklejone twardą spacją
+	// ("składników bioaktywnych") nie mieszczą się w kolumnie nagłówka obok
+	// zdjęcia i wychodzą poza nią.
 	return preg_replace_callback(
-		'/[ \t]+(\S+)\s*$/u',
+		'/(\S+)[ \t]+(\S+)\s*$/u',
 		function ( $m ) {
-			$dlugosc = function_exists( 'mb_strlen' )
-				? mb_strlen( wp_strip_all_tags( $m[1] ) )
-				: strlen( $m[1] );
+			$dl = function ( $s ) {
+				$s = wp_strip_all_tags( $s );
+				return function_exists( 'mb_strlen' ) ? mb_strlen( $s ) : strlen( $s );
+			};
 
-			return $dlugosc <= NTC_TYPO_MAX_SIEROTA ? "\xc2\xa0" . $m[1] : $m[0];
+			return ( $dl( $m[2] ) <= NTC_TYPO_MAX_SIEROTA && $dl( $m[1] ) + $dl( $m[2] ) <= NTC_TYPO_MAX_PARA )
+				? $m[1] . "\xc2\xa0" . $m[2]
+				: $m[0];
 		},
 		$tekst
 	);
