@@ -651,7 +651,8 @@
 							checked: !! props.attributes.showTabs,
 							onChange: function ( v ) { props.setAttributes( { showTabs: v } ); }
 						} )
-					)
+					),
+					linkPanel( props, 'ctaText', 'ctaUrl', 'Przycisk pod opisem (np. katalog PDF)' )
 				),
 				el(
 					'div',

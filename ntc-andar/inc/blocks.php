@@ -560,6 +560,9 @@ function ntc_block_definitions() {
 				'badge'    => $text,
 				'title'    => $text,
 				'sub'      => $text,
+				// Opcjonalny przycisk pod opisem - w ofercie pobranie katalogu.
+				'ctaText'  => $text,
+				'ctaUrl'   => $text,
 				'showTabs' => array(
 					'type'    => 'boolean',
 					'default' => true,
@@ -1682,11 +1685,23 @@ function ntc_render_page_hero( $attrs ) {
 		$tabs = ob_get_clean();
 	}
 
+	$cta = '';
+
+	if ( ntc_a( $attrs, 'ctaText' ) && ntc_a( $attrs, 'ctaUrl' ) ) {
+		// Pliki (np. katalog w PDF) otwierają się w nowej karcie, żeby
+		// czytelnik nie tracił strony oferty.
+		$cta = sprintf(
+			'<div class="sub-hero-cta"><a class="btn-primary" href="%s" target="_blank" rel="noopener">%s <span aria-hidden="true">&darr;</span></a></div>',
+			esc_url( ntc_a( $attrs, 'ctaUrl' ) ),
+			esc_html( ntc_a( $attrs, 'ctaText' ) )
+		);
+	}
+
 	return ntc_sub_hero(
 		ntc_a( $attrs, 'badge' ),
 		ntc_a( $attrs, 'title' ),
 		ntc_a( $attrs, 'sub' ),
-		$tabs
+		$cta . $tabs
 	);
 }
 

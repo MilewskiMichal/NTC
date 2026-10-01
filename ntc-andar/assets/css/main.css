@@ -2409,3 +2409,8 @@ img.ntc-img--zmiesc,
 	transform: translateY(-2px);
 	box-shadow: 0 8px 32px rgba(27, 191, 168, 0.45);
 }
+
+/* Przycisk pod opisem w nagłówku podstrony (pobranie katalogu w ofercie). */
+.sub-hero-cta {
+	margin: 28px 0 44px;
+}
