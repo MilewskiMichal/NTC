@@ -2377,3 +2377,35 @@ img.ntc-img--zmiesc,
 		margin-top: 0;
 	}
 }
+
+/* ------------------------------------- przycisk z edytora w treści sekcji */
+
+/* Przycisk WordPressa (np. "Pobierz PDF" na stronie OWS) wygląda jak
+   przyciski motywu, a nie jak domyślny czarny prostokąt z edytora. */
+.ntc-entry-content .wp-block-buttons {
+	margin-top: 28px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+.ntc-entry-content .wp-block-button__link {
+	background: linear-gradient(135deg, var(--teal-500), var(--teal-600));
+	color: #fff;
+	padding: 13px 28px;
+	border-radius: 100px;
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	text-decoration: none;
+	display: inline-block;
+	box-shadow: 0 4px 20px rgba(27, 191, 168, 0.35);
+	transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.ntc-entry-content .wp-block-button__link:hover {
+	color: #fff;
+	transform: translateY(-2px);
+	box-shadow: 0 8px 32px rgba(27, 191, 168, 0.45);
+}
