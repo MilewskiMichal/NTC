@@ -1323,7 +1323,7 @@ function ntc_render_offer_card( $attrs ) {
 	?>
 	<article class="offer-card">
 		<div class="offer-card-img">
-			<img src="<?php echo esc_url( ntc_block_img( $attrs, 'offer-api' ) ); ?>"
+			<img<?php echo ntc_img_kadr( array( 'imagePos' => ntc_a( $attrs, 'imagePos' ) ), '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> src="<?php echo esc_url( ntc_block_img( $attrs, 'offer-api' ) ); ?>"
 				alt="<?php echo esc_attr( ntc_a( $attrs, 'imageAlt', ntc_a( $attrs, 'title' ) ) ); ?>" loading="lazy" />
 		</div>
 		<div class="offer-card-body">
