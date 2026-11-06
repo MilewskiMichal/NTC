@@ -165,7 +165,7 @@ function ntc_enqueue_editor_assets() {
 	wp_enqueue_script(
 		'ntc-editor',
 		$uri . '/assets/js/editor.js',
-		array( 'wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-i18n' ),
+		array( 'wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-data', 'wp-i18n' ),
 		$ver( '/assets/js/editor.js' ),
 		true
 	);
@@ -205,10 +205,36 @@ function ntc_enqueue_editor_assets() {
 		'before'
 	);
 
+}
+add_action( 'enqueue_block_editor_assets', 'ntc_enqueue_editor_assets' );
+
+/**
+ * Style bloków w edytorze.
+ *
+ * Przez enqueue_block_assets, a nie razem ze skryptem: tylko z tego haka
+ * WordPress przenosi arkusz do ramki (iframe), w której nowsze wersje edytora
+ * pokazują treść strony. Bez tego zdjęcia i przyciski w blokach straciłyby
+ * układ, gdy tylko edytor przełączy się na ramkę. Hak odpala się też na
+ * froncie, stąd warunek.
+ */
+function ntc_enqueue_editor_styles() {
+	if ( ! is_admin() ) {
+		return;
+	}
+
+	$uri = get_template_directory_uri();
+	$dir = get_template_directory();
+
+	$ver = function ( $rel ) use ( $dir ) {
+		$path = $dir . $rel;
+
+		return file_exists( $path ) ? (string) filemtime( $path ) : NTC_VERSION;
+	};
+
 	wp_enqueue_style( 'ntc-editor-fonts', $uri . '/assets/css/fonts.css', array(), $ver( '/assets/css/fonts.css' ) );
 	wp_enqueue_style( 'ntc-editor', $uri . '/assets/css/editor.css', array( 'ntc-editor-fonts' ), $ver( '/assets/css/editor.css' ) );
 }
-add_action( 'enqueue_block_editor_assets', 'ntc_enqueue_editor_assets' );
+add_action( 'enqueue_block_assets', 'ntc_enqueue_editor_styles' );
 
 /**
  * Preload plików fontów użytych nad zgięciem.

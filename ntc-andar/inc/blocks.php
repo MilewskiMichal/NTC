@@ -154,6 +154,23 @@ function ntc_rich( $html ) {
 	);
 }
 
+/**
+ * Pole z edytora podzielone na wiersze.
+ *
+ * Wiersze rozdziela znak nowej linii (treści wgrane hurtem) albo znacznik
+ * br, który zostawia Enter w polu tekstowym edytora. Bez tego drugiego
+ * poprawka zrobiona w kokpicie sklejała listę w jeden akapit i pokazywała
+ * na stronie dosłowne "<br>".
+ *
+ * @param string $text Zawartość pola.
+ * @return string[] Niepuste wiersze, jeszcze bez filtrowania znaczników.
+ */
+function ntc_linie( $text ) {
+	$text = preg_replace( '#<br\s*/?>#i', "\n", (string) $text );
+
+	return array_values( array_filter( array_map( 'trim', explode( "\n", $text ) ), 'strlen' ) );
+}
+
 /** Kolumny, które tabela katalogu umie pokazać. */
 function ntc_table_column_keys() {
 	return array( 'name', 'group', 'cas', 'form', 'maker', 'origin', 'use', 'docs',
@@ -1011,9 +1028,9 @@ function ntc_render_hero( $attrs ) {
 
 		<div class="hero-inner">
 			<div class="hero-content">
-				<span class="hero-badge"><?php echo esc_html( ntc_a( $attrs, 'badge' ) ); ?></span>
+				<span class="hero-badge"><?php echo ntc_rich( ntc_a( $attrs, 'badge' ) ); ?></span>
 				<h1 class="hero-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h1>
-				<p class="hero-sub"><?php echo esc_html( ntc_a( $attrs, 'sub' ) ); ?></p>
+				<p class="hero-sub"><?php echo ntc_rich( ntc_a( $attrs, 'sub' ) ); ?></p>
 				<div class="hero-btns">
 					<?php if ( ntc_a( $attrs, 'btn1Text' ) ) : ?>
 						<a href="<?php echo esc_url( ntc_a( $attrs, 'btn1Url', '#oferta' ) ); ?>" class="btn-primary"><?php echo esc_html( ntc_a( $attrs, 'btn1Text' ) ); ?></a>
@@ -1074,12 +1091,12 @@ function ntc_render_about( $attrs ) {
 				</div>
 
 				<div class="about-body">
-					<div class="section-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
+					<div class="section-label"><?php echo ntc_rich( ntc_a( $attrs, 'label' ) ); ?></div>
 					<h2 class="section-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h2>
-					<p class="section-sub"><?php echo esc_html( ntc_a( $attrs, 'p1' ) ); ?></p>
+					<p class="section-sub"><?php echo ntc_rich( ntc_a( $attrs, 'p1' ) ); ?></p>
 					<?php foreach ( array( 'p2', 'p3' ) as $key ) : ?>
 						<?php if ( ntc_a( $attrs, $key ) ) : ?>
-							<p class="section-sub"><?php echo esc_html( ntc_a( $attrs, $key ) ); ?></p>
+							<p class="section-sub"><?php echo ntc_rich( ntc_a( $attrs, $key ) ); ?></p>
 						<?php endif; ?>
 					<?php endforeach; ?>
 
@@ -1169,13 +1186,13 @@ function ntc_render_prose( $attrs, $content ) {
 function ntc_prose_head( $attrs ) {
 	?>
 	<?php if ( ntc_a( $attrs, 'label' ) ) : ?>
-		<div class="section-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
+		<div class="section-label"><?php echo ntc_rich( ntc_a( $attrs, 'label' ) ); ?></div>
 	<?php endif; ?>
 	<?php if ( ntc_a( $attrs, 'title' ) ) : ?>
 		<h2 class="section-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h2>
 	<?php endif; ?>
 	<?php if ( ntc_a( $attrs, 'lead' ) ) : ?>
-		<p class="section-sub prose-lead"><?php echo esc_html( ntc_a( $attrs, 'lead' ) ); ?></p>
+		<p class="section-sub prose-lead"><?php echo ntc_rich( ntc_a( $attrs, 'lead' ) ); ?></p>
 	<?php endif; ?>
 	<?php
 }
@@ -1204,7 +1221,7 @@ function ntc_render_product_form( $attrs ) {
 			<div class="product-form-card contact-form-wrap">
 				<div class="product-form-head" data-ntc-form-head>
 					<?php if ( ntc_a( $attrs, 'label' ) ) : ?>
-						<div class="section-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
+						<div class="section-label"><?php echo ntc_rich( ntc_a( $attrs, 'label' ) ); ?></div>
 					<?php endif; ?>
 					<h2 class="section-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h2>
 					<?php
@@ -1223,7 +1240,7 @@ function ntc_render_product_form( $attrs ) {
 						: array( (string) ntc_a( $attrs, 'sub' ) );
 					?>
 					<?php foreach ( $zdania as $zdanie ) : ?>
-						<p class="section-sub"><?php echo esc_html( $zdanie ); ?></p>
+						<p class="section-sub"><?php echo ntc_rich( $zdanie ); ?></p>
 					<?php endforeach; ?>
 				</div>
 				<?php
@@ -1250,11 +1267,11 @@ function ntc_render_features( $attrs, $content ) {
 		<div class="section-inner">
 			<div class="why-head">
 				<div>
-					<div class="section-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
+					<div class="section-label"><?php echo ntc_rich( ntc_a( $attrs, 'label' ) ); ?></div>
 					<h2 class="section-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h2>
 				</div>
 				<?php if ( ntc_a( $attrs, 'intro' ) ) : ?>
-					<p class="why-intro"><?php echo esc_html( ntc_a( $attrs, 'intro' ) ); ?></p>
+					<p class="why-intro"><?php echo ntc_rich( ntc_a( $attrs, 'intro' ) ); ?></p>
 				<?php endif; ?>
 			</div>
 			<div class="features-grid"><?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render bloków potomnych. ?></div>
@@ -1269,26 +1286,21 @@ function ntc_render_feature( $attrs ) {
 	// Treść z wielu linii to wyliczenie, a nie akapit. Na stronie laktoferyny
 	// każdy kafelek zbiera po kilka osobnych tez o działaniu białka i zlepione
 	// w jeden blok tekstu przestają być czytelne.
-	$linie = array_values(
-		array_filter(
-			array_map( 'trim', explode( "\n", (string) ntc_a( $attrs, 'text' ) ) ),
-			'strlen'
-		)
-	);
+	$linie = ntc_linie( ntc_a( $attrs, 'text' ) );
 
 	ob_start();
 	?>
 	<div class="feature-card">
 		<div class="feature-icon"><?php ntc_the_icon( ntc_a( $attrs, 'icon', 'flask' ) ); ?></div>
-		<div class="feature-title"><?php echo esc_html( ntc_a( $attrs, 'title' ) ); ?></div>
+		<div class="feature-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></div>
 		<?php if ( count( $linie ) > 1 ) : ?>
 			<ul class="feature-text feature-list">
 				<?php foreach ( $linie as $linia ) : ?>
-					<li><?php echo esc_html( $linia ); ?></li>
+					<li><?php echo ntc_rich( $linia ); ?></li>
 				<?php endforeach; ?>
 			</ul>
 		<?php else : ?>
-			<div class="feature-text"><?php echo esc_html( implode( ' ', $linie ) ); ?></div>
+			<div class="feature-text"><?php echo ntc_rich( implode( ' ', $linie ) ); ?></div>
 		<?php endif; ?>
 	</div>
 	<?php
@@ -1303,7 +1315,7 @@ function ntc_render_offer( $attrs, $content ) {
 		<div class="section-inner">
 			<div class="offer-head">
 				<div>
-					<div class="section-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
+					<div class="section-label"><?php echo ntc_rich( ntc_a( $attrs, 'label' ) ); ?></div>
 					<h2 class="section-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h2>
 				</div>
 				<?php if ( ntc_a( $attrs, 'ctaText' ) ) : ?>
@@ -1328,10 +1340,10 @@ function ntc_render_offer_card( $attrs ) {
 		</div>
 		<div class="offer-card-body">
 			<?php if ( ntc_a( $attrs, 'tag' ) ) : ?>
-				<span class="offer-card-tag"><?php echo esc_html( ntc_a( $attrs, 'tag' ) ); ?></span>
+				<span class="offer-card-tag"><?php echo ntc_rich( ntc_a( $attrs, 'tag' ) ); ?></span>
 			<?php endif; ?>
-			<h3 class="offer-card-title"><?php echo esc_html( ntc_a( $attrs, 'title' ) ); ?></h3>
-			<p class="offer-card-text"><?php echo esc_html( ntc_a( $attrs, 'text' ) ); ?></p>
+			<h3 class="offer-card-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h3>
+			<p class="offer-card-text"><?php echo ntc_rich( ntc_a( $attrs, 'text' ) ); ?></p>
 			<?php
 			// Kafelek zbierający dwie kategorie (laktoferyna i colostrum) ma dwa
 			// odnośniki obok siebie zamiast jednego "dowiedz się więcej".
@@ -1442,7 +1454,7 @@ function ntc_render_logos( $attrs, $content ) {
 			)
 		);
 		?>
-		<div class="carousel-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
+		<div class="carousel-label"><?php echo ntc_rich( ntc_a( $attrs, 'label' ) ); ?></div>
 		<div class="carousel-track-wrap">
 			<div class="carousel-track">
 				<?php
@@ -1511,9 +1523,9 @@ function ntc_render_steps( $attrs, $content ) {
 		<div class="section-inner">
 			<div class="how-grid">
 				<div class="how-intro">
-					<div class="section-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
+					<div class="section-label"><?php echo ntc_rich( ntc_a( $attrs, 'label' ) ); ?></div>
 					<h2 class="section-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h2>
-					<p class="section-sub"><?php echo esc_html( ntc_a( $attrs, 'sub' ) ); ?></p>
+					<p class="section-sub"><?php echo ntc_rich( ntc_a( $attrs, 'sub' ) ); ?></p>
 					<?php if ( ntc_a( $attrs, 'ctaText' ) ) : ?>
 						<a href="<?php echo esc_url( ntc_a( $attrs, 'ctaUrl', ntc_page_url( 'kontakt' ) ) ); ?>" class="btn-primary"><?php echo esc_html( ntc_a( $attrs, 'ctaText' ) ); ?></a>
 					<?php endif; ?>
@@ -1540,8 +1552,8 @@ function ntc_render_step( $attrs ) {
 	<div class="how-step">
 		<div class="how-step-num" aria-hidden="true"></div>
 		<div>
-			<div class="how-step-title"><?php echo esc_html( ntc_a( $attrs, 'title' ) ); ?></div>
-			<div class="how-step-text"><?php echo esc_html( ntc_a( $attrs, 'text' ) ); ?></div>
+			<div class="how-step-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></div>
+			<div class="how-step-text"><?php echo ntc_rich( ntc_a( $attrs, 'text' ) ); ?></div>
 		</div>
 	</div>
 	<?php
@@ -1569,10 +1581,10 @@ function ntc_render_contact( $attrs ) {
 		?>
 		<div class="section-inner">
 			<div class="contact-head">
-				<div class="section-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
+				<div class="section-label"><?php echo ntc_rich( ntc_a( $attrs, 'label' ) ); ?></div>
 				<h2 class="section-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h2>
 				<?php if ( ntc_a( $attrs, 'sub' ) ) : ?>
-					<p class="contact-head-sub"><?php echo esc_html( ntc_a( $attrs, 'sub' ) ); ?></p>
+					<p class="contact-head-sub"><?php echo ntc_rich( ntc_a( $attrs, 'sub' ) ); ?></p>
 				<?php endif; ?>
 			</div>
 
@@ -1768,7 +1780,7 @@ function ntc_render_category( $attrs ) {
 
 			<div class="cat-grid">
 				<div class="cat-text">
-					<div class="section-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
+					<div class="section-label"><?php echo ntc_rich( ntc_a( $attrs, 'label' ) ); ?></div>
 					<h2 class="section-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h2>
 					<?php // Opisy przechodzą przez ntc_rich: pogrubienie z edytora ma być pogrubieniem, a nie widocznym znacznikiem. ?>
 					<p class="section-sub"><?php echo ntc_rich( ntc_a( $attrs, 'p1' ) ); ?></p>
@@ -1873,16 +1885,16 @@ function ntc_render_machines( $attrs ) {
 		<div class="section-inner">
 			<div class="cat-grid">
 				<div class="cat-text">
-					<div class="section-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
+					<div class="section-label"><?php echo ntc_rich( ntc_a( $attrs, 'label' ) ); ?></div>
 					<h2 class="section-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h2>
 					<?php
 					// Opis maszyn na starej stronie to cztery akapity: skup, sprzedaż,
 					// serwis i zaproszenie. Jedno pole tekstowe z podziałem na linie
 					// zostawia to klientowi do edycji bez dokładania pól w bloku.
-					$akapity = array_filter( array_map( 'trim', explode( "\n", (string) ntc_a( $attrs, 'text' ) ) ), 'strlen' );
+					$akapity = ntc_linie( ntc_a( $attrs, 'text' ) );
 					?>
 					<?php foreach ( $akapity as $akapit ) : ?>
-						<p class="section-sub"><?php echo esc_html( $akapit ); ?></p>
+						<p class="section-sub"><?php echo ntc_rich( $akapit ); ?></p>
 					<?php endforeach; ?>
 					<?php if ( ntc_a( $attrs, 'ctaText' ) ) : ?>
 						<a href="<?php echo esc_url( ntc_a( $attrs, 'ctaUrl', '#' ) ); ?>" target="_blank" rel="noopener noreferrer" class="btn-primary">
@@ -1891,7 +1903,7 @@ function ntc_render_machines( $attrs ) {
 					<?php endif; ?>
 					<?php if ( ntc_a( $attrs, 'note' ) ) : ?>
 						<p class="machines-note">
-							<?php echo wp_kses( nl2br( esc_html( ntc_a( $attrs, 'note' ) ) ), array( 'br' => array() ) ); ?>
+							<?php echo ntc_rich( implode( '<br />', ntc_linie( ntc_a( $attrs, 'note' ) ) ) ); ?>
 						</p>
 					<?php endif; ?>
 				</div>
@@ -1913,9 +1925,9 @@ function ntc_render_lp_hero( $attrs ) {
 	<section class="lp-hero">
 		<?php echo ntc_hero_lines( 5, '0 0 1400 600', '0.7', 'lp-hero-bg' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		<div class="lp-hero-inner">
-			<span class="lp-hero-badge"><?php echo esc_html( ntc_a( $attrs, 'badge' ) ); ?></span>
+			<span class="lp-hero-badge"><?php echo ntc_rich( ntc_a( $attrs, 'badge' ) ); ?></span>
 			<h1 class="lp-hero-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h1>
-			<p class="lp-hero-sub"><?php echo esc_html( ntc_a( $attrs, 'sub' ) ); ?></p>
+			<p class="lp-hero-sub"><?php echo ntc_rich( ntc_a( $attrs, 'sub' ) ); ?></p>
 		</div>
 	</section>
 	<?php
@@ -1943,9 +1955,9 @@ function ntc_render_contact_panel( $attrs ) {
 			<div class="contact-panel">
 
 				<div class="contact-info">
-					<div class="contact-info-title"><?php echo esc_html( ntc_a( $attrs, 'infoTitle' ) ); ?></div>
+					<div class="contact-info-title"><?php echo ntc_rich( ntc_a( $attrs, 'infoTitle' ) ); ?></div>
 					<?php if ( ntc_a( $attrs, 'infoSub' ) ) : ?>
-						<div class="contact-info-sub"><?php echo esc_html( ntc_a( $attrs, 'infoSub' ) ); ?></div>
+						<div class="contact-info-sub"><?php echo ntc_rich( ntc_a( $attrs, 'infoSub' ) ); ?></div>
 					<?php endif; ?>
 
 					<?php foreach ( $rows as $row ) : ?>
@@ -1973,8 +1985,8 @@ function ntc_render_contact_panel( $attrs ) {
 
 				<div class="contact-form-wrap">
 					<div data-ntc-form-head>
-						<div class="contact-form-title"><?php echo esc_html( ntc_a( $attrs, 'formTitle' ) ); ?></div>
-						<div class="contact-form-sub"><?php echo esc_html( ntc_a( $attrs, 'formSub' ) ); ?></div>
+						<div class="contact-form-title"><?php echo ntc_rich( ntc_a( $attrs, 'formTitle' ) ); ?></div>
+						<div class="contact-form-sub"><?php echo ntc_rich( ntc_a( $attrs, 'formSub' ) ); ?></div>
 					</div>
 					<?php ntc_the_contact_form( 'full' ); ?>
 				</div>
@@ -1993,7 +2005,7 @@ function ntc_render_map( $attrs, $content ) {
 	<section class="section map-section">
 		<div class="section-inner">
 			<div class="map-head">
-				<div class="section-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
+				<div class="section-label"><?php echo ntc_rich( ntc_a( $attrs, 'label' ) ); ?></div>
 				<h2 class="section-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h2>
 			</div>
 			<div class="map-grid">
@@ -2025,9 +2037,9 @@ function ntc_render_map_card( $attrs ) {
 	ob_start();
 	?>
 	<div class="map-info-card">
-		<div class="map-info-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
-		<div class="map-info-title"><?php echo esc_html( ntc_a( $attrs, 'title' ) ); ?></div>
-		<div class="map-info-text"><?php echo esc_html( ntc_a( $attrs, 'text' ) ); ?></div>
+		<div class="map-info-label"><?php echo ntc_rich( ntc_a( $attrs, 'label' ) ); ?></div>
+		<div class="map-info-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></div>
+		<div class="map-info-text"><?php echo ntc_rich( ntc_a( $attrs, 'text' ) ); ?></div>
 	</div>
 	<?php
 	return ob_get_clean();
@@ -2042,8 +2054,8 @@ function ntc_render_quick_cta( $attrs ) {
 	<section class="quick-cta-wrap">
 		<div class="quick-cta">
 			<div>
-				<div class="quick-cta-head"><?php echo esc_html( ntc_a( $attrs, 'head' ) ); ?></div>
-				<div class="quick-cta-sub"><?php echo esc_html( ntc_a( $attrs, 'sub' ) ); ?></div>
+				<div class="quick-cta-head"><?php echo ntc_rich( ntc_a( $attrs, 'head' ) ); ?></div>
+				<div class="quick-cta-sub"><?php echo ntc_rich( ntc_a( $attrs, 'sub' ) ); ?></div>
 			</div>
 			<div class="quick-cta-row">
 				<a href="<?php echo esc_url( $co['phone_href'] ); ?>" class="btn-white"><?php echo esc_html( $co['phone'] ); ?></a>
@@ -2092,11 +2104,11 @@ function ntc_render_checklist( $attrs, $content ) {
 			<div class="checklist-grid<?php echo $flip ? ' checklist-grid--flip' : ''; ?>">
 				<div class="checklist-text">
 					<?php if ( ntc_a( $attrs, 'label' ) ) : ?>
-						<div class="section-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
+						<div class="section-label"><?php echo ntc_rich( ntc_a( $attrs, 'label' ) ); ?></div>
 					<?php endif; ?>
 					<h2 class="section-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h2>
 					<?php if ( ntc_a( $attrs, 'intro' ) ) : ?>
-						<p class="section-sub"><?php echo esc_html( ntc_a( $attrs, 'intro' ) ); ?></p>
+						<p class="section-sub"><?php echo ntc_rich( ntc_a( $attrs, 'intro' ) ); ?></p>
 					<?php endif; ?>
 					<ul class="checklist-items"><?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render bloków potomnych. ?></ul>
 				</div>
@@ -2194,7 +2206,7 @@ function ntc_render_certs( $attrs, $content ) {
 		?>
 		<div class="section-inner">
 			<?php if ( ntc_a( $attrs, 'label' ) ) : ?>
-				<div class="section-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
+				<div class="section-label"><?php echo ntc_rich( ntc_a( $attrs, 'label' ) ); ?></div>
 			<?php endif; ?>
 			<h2 class="section-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h2>
 
@@ -2497,11 +2509,11 @@ function ntc_render_origin_map( $attrs ) {
 		<div class="section-inner">
 			<div class="origin-head">
 				<?php if ( ntc_a( $attrs, 'label' ) ) : ?>
-					<div class="section-label"><?php echo esc_html( ntc_a( $attrs, 'label' ) ); ?></div>
+					<div class="section-label"><?php echo ntc_rich( ntc_a( $attrs, 'label' ) ); ?></div>
 				<?php endif; ?>
 				<h2 class="section-title"><?php echo ntc_rich( ntc_a( $attrs, 'title' ) ); ?></h2>
 				<?php if ( ntc_a( $attrs, 'sub' ) ) : ?>
-					<p class="section-sub"><?php echo esc_html( ntc_a( $attrs, 'sub' ) ); ?></p>
+					<p class="section-sub"><?php echo ntc_rich( ntc_a( $attrs, 'sub' ) ); ?></p>
 				<?php endif; ?>
 			</div>
 
