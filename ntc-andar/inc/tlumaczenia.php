@@ -37,11 +37,13 @@ function ntc_en_register() {
 				'add_new_item'  => 'Dodaj wersję angielską',
 				'search_items'  => 'Szukaj w wersjach angielskich',
 				'not_found'     => 'Brak wersji angielskich',
-				'menu_name'     => 'Wersje EN',
+				'menu_name'     => 'Wersje angielskie',
 			),
 			'public'       => false,
 			'show_ui'      => true,
-			'show_in_menu' => true,
+			// Podmenu "Treści strony" (inc/kokpit.php) - wersje angielskie
+			// stoją tam obok polskich, zamiast w osobnym dziale kokpitu.
+			'show_in_menu' => 'ntc-tresci',
 			'show_in_rest' => true,
 			'rest_base'    => 'ntc_en',
 			'menu_icon'    => 'dashicons-translation',
@@ -480,56 +482,6 @@ function ntc_en_links( $html ) {
 add_filter( 'render_block', 'ntc_en_links', 30 );
 
 /* ------------------------------------------------------------- kokpit */
-
-/**
- * Odnośnik do wersji angielskiej w edytorze strony i wpisu.
- */
-function ntc_en_metabox() {
-	foreach ( array( 'page', 'post' ) as $typ ) {
-		add_meta_box( 'ntc-en', 'Wersja angielska', 'ntc_en_metabox_html', $typ, 'side' );
-	}
-
-	add_meta_box( 'ntc-en-zrodlo', 'Wersja polska', 'ntc_en_zrodlo_html', NTC_EN_CPT, 'side' );
-}
-add_action( 'add_meta_boxes', 'ntc_en_metabox' );
-
-/**
- * Pole boczne na stronie polskiej.
- *
- * @param WP_Post $post Wpis.
- */
-function ntc_en_metabox_html( $post ) {
-	$id = (int) get_post_meta( $post->ID, '_ntc_en_id', true );
-
-	if ( $id && get_post( $id ) ) {
-		printf(
-			'<p><a href="%s">Edytuj wersję angielską</a></p><p><a href="%s" target="_blank">Podgląd po angielsku</a></p>',
-			esc_url( get_edit_post_link( $id ) ),
-			esc_url( add_query_arg( 'lang', 'en', get_permalink( $post ) ) )
-		);
-		return;
-	}
-
-	echo '<p>Ta treść nie ma jeszcze wersji angielskiej - w trybie EN pokazuje się po polsku.</p>';
-}
-
-/**
- * Pole boczne na wersji angielskiej.
- *
- * @param WP_Post $post Wersja angielska.
- */
-function ntc_en_zrodlo_html( $post ) {
-	$id = (int) get_post_meta( $post->ID, '_ntc_zrodlo', true );
-
-	if ( $id && get_post( $id ) ) {
-		printf(
-			'<p>Tłumaczenie strony: <a href="%s">%s</a></p><p><a href="%s" target="_blank">Podgląd po angielsku</a></p>',
-			esc_url( get_edit_post_link( $id ) ),
-			esc_html( get_post( $id )->post_title ),
-			esc_url( add_query_arg( 'lang', 'en', get_permalink( $id ) ) )
-		);
-	}
-}
 
 /**
  * Kolumna "Tłumaczenie strony" na liście wersji angielskich.

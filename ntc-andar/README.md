@@ -8,8 +8,15 @@ językowe, bez płatnych wtyczek i bez zależności zewnętrznych w przeglądarc
 
 Każda sekcja projektu jest **blokiem**. Wchodzisz w edycję strony, widzisz hero,
 sekcję "O nas", kafelki oferty i tak dalej, klikasz w nagłówek i piszesz.
-Zdjęcia wybierasz z biblioteki mediów, przyciski i odnośniki z panelu po prawej,
-sekcje przestawiasz i usuwasz jak każde inne bloki.
+Zdjęcie zmieniasz przyciskiem w samym bloku, napis na przycisku wpisujesz w
+miejscu, a adres wybierasz z wyszukiwarki stron albo z biblioteki mediów. Panel
+po prawej trzyma tylko ustawienia: tło, kadrowanie, kategorię tabeli.
+
+Punktem wyjścia jest ekran **Treści strony** (pierwsza pozycja w menu
+kokpitu): wszystkie strony i wpisy w kolejności serwisu, przy każdej wersja
+polska i angielska. Edytor pokazuje nad treścią, którą wersję językową się
+poprawia. Menu kokpitu jest domyślnie uproszczone - pełne włącza się ostatnią
+pozycją menu, osobno dla każdego użytkownika.
 
 Bloki są **renderowane po stronie PHP**, a nie zapisywane jako HTML w bazie.
 Znaczy to tyle, że poprawka w kodzie działa wstecz na wszystkich stronach, które
