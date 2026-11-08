@@ -145,6 +145,8 @@ return array(
 	'form.sent_title_long'     => 'Thank you for your message!',
 	'form.sent_text_long'      => 'We will reply as soon as we can.',
 	'form.demo_notice'         => 'This form is currently a mock-up - it does not send messages yet.',
+	'form.sending'             => 'Sending…',
+	'form.error'               => 'We could not send the form. Please try again in a moment or write to us at %s',
 
 	/* ------------------------------------------------------------------ Footer */
 	'footer.desc'              => 'Distributor of active substances for the pharmaceutical, food, veterinary and cosmetics industries. Since 2000.',

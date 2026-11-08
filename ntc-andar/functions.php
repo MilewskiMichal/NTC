@@ -24,6 +24,7 @@ require_once get_template_directory() . '/inc/autor.php';
 require_once get_template_directory() . '/inc/tlumaczenia.php';
 require_once get_template_directory() . '/inc/kokpit.php';
 require_once get_template_directory() . '/inc/przekierowania.php';
+require_once get_template_directory() . '/inc/zapytania.php';
 
 /**
  * Podstawowe wsparcie funkcji WordPressa.
@@ -112,6 +113,20 @@ function ntc_enqueue_assets() {
 	wp_register_style( 'ntc-style', get_stylesheet_uri(), array( 'ntc-main' ), $ver( '/style.css' ) );
 
 	wp_enqueue_script( 'ntc-main', $uri . '/assets/js/main.js', array(), $ver( '/assets/js/main.js' ), true );
+
+	// Formularze wysyłają zgłoszenia do trasy REST z inc/zapytania.php.
+	$ntc_firma = ntc_company();
+
+	wp_localize_script(
+		'ntc-main',
+		'ntcFormularz',
+		array(
+			'url'     => rest_url( 'ntc/v1/zapytanie' ),
+			'lang'    => ntc_lang(),
+			'sending' => ntc_raw( 'form.sending' ),
+			'error'   => sprintf( ntc_raw( 'form.error' ), $ntc_firma['email'] ),
+		)
+	);
 
 	$needs_offer = ntc_page_uses( array( 'ntc/page-hero', 'ntc/category', 'ntc/machines' ) )
 		|| is_page_template( 'template-oferta.php' );

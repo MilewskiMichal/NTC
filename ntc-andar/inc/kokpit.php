@@ -177,6 +177,7 @@ function ntc_kokpit_uprosc_menu() {
 		'edit.php',
 		'upload.php',
 		'edit.php?post_type=' . NTC_PRODUCT_CPT,
+		'edit.php?post_type=ntc_zapytanie',
 		'themes.php',
 		'profile.php',
 	);
@@ -560,6 +561,10 @@ function ntc_kokpit_ekran() {
 
 		<h2>Inne miejsca</h2>
 		<ul class="ntc-kokpit-skroty">
+			<li>
+				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=ntc_zapytanie' ) ); ?>">Zapytania z formularzy</a>
+				<span>Każde zgłoszenie ze strony, także gdy mail nie doszedł.</span>
+			</li>
 			<li>
 				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=' . NTC_PRODUCT_CPT ) ); ?>">Produkty</a>
 				<span>Substancje w tabelach oferty, z polami po polsku i po angielsku.</span>

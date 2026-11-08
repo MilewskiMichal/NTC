@@ -184,20 +184,15 @@
 
 	function initForms() {
 		var forms = document.querySelectorAll('[data-ntc-form]');
+		// Dane trasy i napisy przychodzą z PHP (functions.php, ntcFormularz).
+		var cfg = window.ntcFormularz || null;
+		var start = Date.now();
 
 		Array.prototype.forEach.call(forms, function (form) {
-			form.addEventListener('submit', function (event) {
-				event.preventDefault();
+			var przycisk = form.querySelector('[type="submit"]');
+			var blad = form.querySelector('[data-ntc-error]');
 
-				// novalidate w HTML-u wyłącza dymki przeglądarki przy wpisywaniu,
-				// ale walidację i tak chcemy - wywołujemy ją ręcznie przy wysyłce.
-				if (typeof form.reportValidity === 'function' && !form.reportValidity()) {
-					return;
-				}
-
-				// Makieta: nic nie leci na serwer, pokazujemy potwierdzenie.
-				// Podpięcie prawdziwej wysyłki = fetch() w tym miejscu albo
-				// zdjęcie preventDefault i ustawienie action/method na formularzu.
+			function pokazPotwierdzenie() {
 				var wrap = form.parentNode;
 				var sent = wrap.querySelector('[data-ntc-sent]');
 				var hideSelector = form.getAttribute('data-ntc-hide');
@@ -217,6 +212,69 @@
 					sent.setAttribute('tabindex', '-1');
 					sent.focus();
 				}
+			}
+
+			function pokazBlad() {
+				if (blad) {
+					blad.textContent = cfg ? cfg.error : '';
+					blad.hidden = false;
+				}
+			}
+
+			form.addEventListener('submit', function (event) {
+				event.preventDefault();
+
+				// novalidate w HTML-u wyłącza dymki przeglądarki przy wpisywaniu,
+				// ale walidację i tak chcemy - wywołujemy ją ręcznie przy wysyłce.
+				if (typeof form.reportValidity === 'function' && !form.reportValidity()) {
+					return;
+				}
+
+				if (!cfg || !window.fetch || !window.FormData) {
+					pokazBlad();
+					return;
+				}
+
+				var dane = new FormData(form);
+				var napis = przycisk ? przycisk.textContent : '';
+
+				dane.append('wariant', form.getAttribute('data-ntc-form') || 'home');
+				dane.append('jezyk', cfg.lang);
+				dane.append('strona', window.location.href);
+				dane.append('czas', String(Math.round((Date.now() - start) / 1000)));
+
+				if (blad) {
+					blad.hidden = true;
+				}
+
+				if (przycisk) {
+					przycisk.disabled = true;
+					przycisk.textContent = cfg.sending;
+				}
+
+				// Bez ciasteczek: zgłoszenie idzie jako anonimowe, także gdy
+				// wysyła je zalogowany redaktor - wtedy WordPress nie wymaga
+				// tokenu, który w stronie z pamięci podręcznej bywa przeterminowany.
+				fetch(cfg.url, { method: 'POST', body: dane, credentials: 'omit' })
+					.then(function (odp) {
+						return odp.json().then(function (json) {
+							return odp.ok && json && json.ok;
+						});
+					})
+					.then(function (ok) {
+						if (ok) {
+							pokazPotwierdzenie();
+						} else {
+							pokazBlad();
+						}
+					})
+					.catch(pokazBlad)
+					.then(function () {
+						if (przycisk) {
+							przycisk.disabled = false;
+							przycisk.textContent = napis;
+						}
+					});
 			});
 		});
 	}

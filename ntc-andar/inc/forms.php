@@ -3,9 +3,9 @@
  * Formularze kontaktowe.
  *
  * Dwa warianty tego samego formularza: skrócony na ciemnym tle sekcji na
- * stronie głównej i pełny na jasnej karcie podstrony kontaktu. Oba są na
- * razie makietą - walidują pola i pokazują potwierdzenie, ale nic nie
- * wysyłają. Obsługa siedzi w assets/js/main.js, w jednym oznaczonym miejscu.
+ * stronie głównej i pełny na jasnej karcie podstrony kontaktu. Skrypt w
+ * assets/js/main.js wysyła je do trasy REST z inc/zapytania.php, która
+ * zapisuje zgłoszenie w kokpicie i wysyła je mailem.
  *
  * Wyciągnięte z szablonów do osobnego pliku, bo po przejściu na bloki ten sam
  * formularz renderują dwa różne bloki.
@@ -31,7 +31,7 @@ function ntc_the_contact_form( $variant = 'home', $args = array() ) {
 /** Wariant skrócony - sekcja kontaktowa strony głównej. */
 function ntc_contact_form_home() {
 	?>
-	<form class="contact-form" data-ntc-form novalidate>
+	<form class="contact-form" data-ntc-form="home" novalidate>
 		<label class="screen-reader-text" for="ntc-home-firma"><?php ntc_e( 'form.company_req' ); ?></label>
 		<input class="form-input" id="ntc-home-firma" name="firma" required
 			placeholder="<?php echo esc_attr( ntc_raw( 'form.company_req' ) ); ?>" />
@@ -54,7 +54,7 @@ function ntc_contact_form_home() {
 		</label>
 
 		<button type="submit" class="form-submit"><?php ntc_e( 'form.submit_ask' ); ?></button>
-		<?php ntc_form_demo_notice(); ?>
+		<?php ntc_form_ukryte(); ?>
 	</form>
 
 	<div class="form-sent" data-ntc-sent hidden>
@@ -75,7 +75,7 @@ function ntc_contact_form_full( $args = array() ) {
 	$prefix  = isset( $args['prefix'] ) && $args['prefix'] ? sanitize_html_class( $args['prefix'] ) : 'ntc';
 	$subject = isset( $args['subject'] ) ? (string) $args['subject'] : '';
 	?>
-	<form class="contact-form" data-ntc-form data-ntc-hide="[data-ntc-form-head]" novalidate>
+	<form class="contact-form" data-ntc-form="full" data-ntc-hide="[data-ntc-form-head]" novalidate>
 
 		<div class="form-row">
 			<div class="form-field">
@@ -137,7 +137,7 @@ function ntc_contact_form_full( $args = array() ) {
 		</label>
 
 		<button type="submit" class="form-submit"><?php ntc_e( 'form.submit_send' ); ?></button>
-		<?php ntc_form_demo_notice(); ?>
+		<?php ntc_form_ukryte(); ?>
 	</form>
 
 	<div class="sent-card" data-ntc-sent hidden>
@@ -146,20 +146,6 @@ function ntc_contact_form_full( $args = array() ) {
 		<div class="sent-text"><?php ntc_e( 'form.sent_text_long' ); ?></div>
 	</div>
 	<?php
-}
-
-/**
- * Adnotacja, że formularz jest makietą.
- *
- * Znika sama, kiedy w Dostosuj wyłączysz przełącznik "formularz jest makietą" -
- * po podpięciu prawdziwej wysyłki nie trzeba grzebać w szablonach.
- */
-function ntc_form_demo_notice() {
-	if ( ! get_theme_mod( 'ntc_form_demo', true ) ) {
-		return;
-	}
-
-	printf( '<p class="form-demo-notice">%s</p>', esc_html( ntc_raw( 'form.demo_notice' ) ) );
 }
 
 /**

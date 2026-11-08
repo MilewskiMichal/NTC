@@ -2414,3 +2414,28 @@ img.ntc-img--zmiesc,
 .sub-hero-cta {
 	margin: 28px 0 44px;
 }
+
+/* Formularze: pole-pułapka na boty (poza ekranem, nie display:none, bo część
+   botów pomija ukryte pola) i komunikat o błędzie wysyłki. */
+.form-hp {
+	position: absolute;
+	left: -10000px;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+}
+
+.form-error {
+	margin: 12px 0 0;
+	padding: 10px 14px;
+	border-radius: 8px;
+	background: rgba(214, 54, 56, 0.1);
+	color: #b32d2e;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.form-submit:disabled {
+	opacity: 0.7;
+	cursor: wait;
+}

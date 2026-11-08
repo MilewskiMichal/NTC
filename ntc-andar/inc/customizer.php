@@ -143,20 +143,38 @@ function ntc_customize_register( $wp_customize ) {
 	);
 
 	$wp_customize->add_setting(
-		'ntc_form_demo',
+		'ntc_form_recipient',
 		array(
-			'default'           => true,
-			'sanitize_callback' => 'wp_validate_boolean',
+			'default'           => '',
+			'sanitize_callback' => 'sanitize_text_field',
 		)
 	);
 
 	$wp_customize->add_control(
-		'ntc_form_demo',
+		'ntc_form_recipient',
 		array(
-			'label'       => 'Pokaż adnotację, że formularz jest makietą',
-			'description' => 'Zostaw włączone, dopóki formularz nie wysyła wiadomości. Po podpięciu wysyłki wyłącz - adnotacja zniknie z obu formularzy.',
+			'label'       => 'Gdzie trafiają zgłoszenia',
+			'description' => 'Adres e-mail, na który przychodzą zapytania z formularzy. Kilka adresów oddziel przecinkami. Puste - e-mail z Danych firmowych. Każde zgłoszenie jest też zapisane w kokpicie, w menu Zapytania.',
 			'section'     => 'ntc_forms',
-			'type'        => 'checkbox',
+			'type'        => 'text',
+		)
+	);
+
+	$wp_customize->add_setting(
+		'ntc_form_sender',
+		array(
+			'default'           => '',
+			'sanitize_callback' => 'sanitize_email',
+		)
+	);
+
+	$wp_customize->add_control(
+		'ntc_form_sender',
+		array(
+			'label'       => 'Adres nadawcy maili ze strony',
+			'description' => 'Puste - formularz@ w domenie strony. Wtyczka pocztowa (FluentSMTP) może ustawić własny.',
+			'section'     => 'ntc_forms',
+			'type'        => 'email',
 		)
 	);
 }

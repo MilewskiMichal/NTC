@@ -145,6 +145,8 @@ return array(
 	'form.sent_title_long'     => 'Dziękujemy za wiadomość!',
 	'form.sent_text_long'      => 'Odpowiemy najszybciej jak to możliwe.',
 	'form.demo_notice'         => 'Formularz jest w tej chwili makietą - nie wysyła jeszcze wiadomości.',
+	'form.sending'             => 'Wysyłanie…',
+	'form.error'               => 'Nie udało się wysłać formularza. Spróbuj ponownie za chwilę albo napisz do nas: %s',
 
 	/* ---------------------------------------------------------------------- Stopka */
 	'footer.desc'              => 'Dystrybutor substancji aktywnych dla przemysłu farmaceutycznego, spożywczego, weterynaryjnego i kosmetycznego. Od 2000 roku.',
