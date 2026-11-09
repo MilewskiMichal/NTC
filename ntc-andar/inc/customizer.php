@@ -172,7 +172,7 @@ function ntc_customize_register( $wp_customize ) {
 		'ntc_form_sender',
 		array(
 			'label'       => 'Adres nadawcy maili ze strony',
-			'description' => 'Puste - formularz@ w domenie strony. Wtyczka pocztowa (FluentSMTP) może ustawić własny.',
+			'description' => 'Puste - formularz@ w domenie strony. Musi być w tej samej domenie co strona, inaczej maile trafią do spamu.',
 			'section'     => 'ntc_forms',
 			'type'        => 'email',
 		)

@@ -271,7 +271,7 @@ function ntc_zapytanie_wyslij( $id, $dane ) {
 /**
  * Nadawca maili ze strony - adres w domenie strony zamiast "WordPress".
  *
- * Wtyczka pocztowa (np. FluentSMTP) może ten adres nadpisać swoim.
+ * Podpis DKIM (niżej) jest wystawiany właśnie na tę domenę.
  *
  * @param string $adres Domyślny nadawca.
  * @return string
@@ -299,6 +299,69 @@ function ntc_zapytania_nazwa_nadawcy( $nazwa ) {
 	return 'WordPress' === $nazwa ? get_bloginfo( 'name' ) . ' - strona www' : $nazwa;
 }
 add_filter( 'wp_mail_from_name', 'ntc_zapytania_nazwa_nadawcy' );
+
+/**
+ * Podpis DKIM maili ze strony.
+ *
+ * Poczta domeny stoi w Microsoft 365, a maile ze strony wysyła serwer
+ * hostingu. Bez podpisu domeny lądowałyby w spamie. Podpisuje sam WordPress
+ * (PHPMailer), kluczem zapisanym w bazie (opcje ntc_dkim_selektor i
+ * ntc_dkim_klucz) - nie trzeba do tego panelu hostingu.
+ *
+ * Podpis włącza się sam, dopiero gdy w DNS domeny pojawi się rekord
+ * <selektor>._domainkey z kluczem publicznym. Wcześniej podpis byłby nie do
+ * sprawdzenia i szkodziłby bardziej, niż jego brak.
+ *
+ * @param PHPMailer\PHPMailer\PHPMailer $mailer Wysyłający mail.
+ */
+function ntc_poczta_dkim( $mailer ) {
+	$selektor = (string) get_option( 'ntc_dkim_selektor', '' );
+	$klucz    = (string) get_option( 'ntc_dkim_klucz', '' );
+	$domena   = strtolower( (string) substr( (string) strrchr( (string) $mailer->From, '@' ), 1 ) );
+
+	if ( '' === $selektor || '' === $klucz || '' === $domena || ! ntc_poczta_dkim_w_dns( $selektor, $domena ) ) {
+		return;
+	}
+
+	$mailer->DKIM_domain         = $domena;
+	$mailer->DKIM_selector       = $selektor;
+	$mailer->DKIM_private_string = $klucz;
+	$mailer->DKIM_identity       = $mailer->From;
+}
+add_action( 'phpmailer_init', 'ntc_poczta_dkim' );
+
+/**
+ * Czy klucz publiczny DKIM jest już w DNS domeny.
+ *
+ * Wynik siedzi w pamięci: dodatni na dobę, ujemny na kwadrans - po dodaniu
+ * rekordu podpis rusza najpóźniej po 15 minutach, bez ruszania strony.
+ *
+ * @param string $selektor Selektor DKIM.
+ * @param string $domena   Domena nadawcy.
+ * @return bool
+ */
+function ntc_poczta_dkim_w_dns( $selektor, $domena ) {
+	$pamiec = 'ntc_dkim_dns_' . md5( $selektor . '|' . $domena );
+	$stan   = get_transient( $pamiec );
+
+	if ( false === $stan ) {
+		$stan    = 'nie';
+		$rekordy = function_exists( 'dns_get_record' ) ? @dns_get_record( $selektor . '._domainkey.' . $domena, DNS_TXT ) : array(); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- brak rekordu to zwykła sytuacja, nie błąd.
+
+		foreach ( (array) $rekordy as $rekord ) {
+			$tekst = isset( $rekord['entries'] ) ? implode( '', (array) $rekord['entries'] ) : ( isset( $rekord['txt'] ) ? $rekord['txt'] : '' );
+
+			if ( false !== strpos( $tekst, 'v=DKIM1' ) && false !== strpos( $tekst, 'p=' ) ) {
+				$stan = 'tak';
+				break;
+			}
+		}
+
+		set_transient( $pamiec, $stan, 'tak' === $stan ? DAY_IN_SECONDS : 15 * MINUTE_IN_SECONDS );
+	}
+
+	return 'tak' === $stan;
+}
 
 /* ----------------------------------------------------------------- kokpit */
 
