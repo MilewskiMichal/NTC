@@ -71,9 +71,11 @@ dokumentacja, pochodzenie) i kategoria.
 
 ### Dane demonstracyjne
 
-Przy pierwszym włączeniu motyw zakłada trzy kategorie (`api`, `probiotyki`,
+Przy włączeniu motyw zakłada trzy kategorie (`api`, `probiotyki`,
 `laktoferyna`) i wstawia **20 pozycji z makiety**, żeby tabele miały co pokazać
-przed dostarczeniem katalogu przez klienta.
+przed dostarczeniem katalogu przez klienta. Pozycje z makiety wchodzą tylko do
+pustego katalogu: gdy jest w nim choć jedna prawdziwa pozycja (także szkic albo
+wpis w koszu), ani włączenie motywu, ani przycisk niczego nie dosypią.
 
 **To nie jest oferta NTC Andar.** Nazwy substancji i numery CAS są prawdziwe (to
 publiczne identyfikatory), ale przypisanie ich do oferty, kraje pochodzenia i
@@ -88,7 +90,8 @@ Dlatego każda taka pozycja jest oznaczona:
 
 Ten sam ekran ma przycisk do ponownego wstawienia, gdyby motyw był włączony
 wcześniej albo gdyby ktoś skasował je za wcześnie. Wstawianie jest idempotentne -
-nie zdubluje tego, co już jest.
+nie zdubluje tego, co już jest. Przy prawdziwym katalogu przycisk znika, a gdy
+nie zostało już nic z makiety, z menu znika cały ekran.
 
 Usuwanie rusza wyłącznie wpisy z oznaczeniem `_ntc_demo`, więc produkty dopisane
 ręcznie zostają nietknięte, nawet jeśli mają tę samą nazwę.

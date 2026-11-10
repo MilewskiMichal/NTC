@@ -70,6 +70,13 @@ function ntc_demo_products() {
  * @return int Liczba faktycznie dodanych wpisów.
  */
 function ntc_seed_demo_products() {
+	// Tylko do pustego katalogu. Wcześniej przełączenie motywu albo przycisk
+	// "Wstaw" dosypywały wymyślone pozycje między prawdziwą ofertę - tak 20
+	// z nich trafiło w listopadzie 2026 na stronę klienta.
+	if ( ntc_has_real_products() ) {
+		return 0;
+	}
+
 	$added = 0;
 	$order = 0;
 
@@ -181,10 +188,38 @@ function ntc_count_demo_products() {
 }
 
 /**
- * Przy pierwszym włączeniu motywu zakładamy kategorie i wstawiamy demo.
+ * Czy w katalogu są pozycje spoza makiety.
  *
- * Odpala się tylko raz, przy przełączeniu motywu - późniejsze wejścia w kokpit
- * niczego nie dosypują.
+ * Liczą się wszystkie stany, także szkice i kosz: wymyślone dane nie mogą
+ * trafić do katalogu, nad którym ktoś już pracuje.
+ *
+ * @return bool
+ */
+function ntc_has_real_products() {
+	$ids = get_posts(
+		array(
+			'post_type'      => NTC_PRODUCT_CPT,
+			'posts_per_page' => 1,
+			'post_status'    => array( 'publish', 'future', 'draft', 'pending', 'private', 'trash' ),
+			'fields'         => 'ids',
+			'meta_query'     => array(
+				array(
+					'key'     => NTC_DEMO_META,
+					'compare' => 'NOT EXISTS',
+				),
+			),
+		)
+	);
+
+	return ! empty( $ids );
+}
+
+/**
+ * Przy włączeniu motywu zakładamy kategorie i wstawiamy demo.
+ *
+ * Odpala się przy przełączeniu motywu, a demo wchodzi tylko do pustego
+ * katalogu (pilnuje tego ntc_seed_demo_products), więc ponowne włączenie
+ * motywu na stronie z prawdziwą ofertą niczego nie dosypuje.
  */
 function ntc_seed_on_activation() {
 	ntc_seed_demo_products();
@@ -199,6 +234,15 @@ add_action( 'after_switch_theme', 'ntc_seed_on_activation', 20 );
  * Podstrona "Dane demonstracyjne" w menu Produkty.
  */
 function ntc_demo_admin_page() {
+	// Przy prawdziwym katalogu bez resztek makiety ten ekran nie ma nic do
+	// zrobienia, więc znika z menu Produkty. Pod swoim adresem działa dalej,
+	// choćby zaraz po skasowaniu danych przyciskiem.
+	$ten_ekran = 'ntc-demo-content' === ( $_GET['page'] ?? '' );
+
+	if ( ! $ten_ekran && ntc_has_real_products() && ! ntc_count_demo_products() ) {
+		return;
+	}
+
 	add_submenu_page(
 		'edit.php?post_type=' . NTC_PRODUCT_CPT,
 		'Dane demonstracyjne',
@@ -223,6 +267,17 @@ function ntc_demo_admin_handle() {
 	$action = sanitize_key( wp_unslash( $_POST['ntc_demo_action'] ) );
 
 	if ( 'seed' === $action ) {
+		if ( ntc_has_real_products() ) {
+			add_settings_error(
+				'ntc_demo',
+				'ntc_demo_blocked',
+				'Katalog ma już prawdziwe pozycje, więc danych z makiety nie wstawiono.',
+				'error'
+			);
+
+			return;
+		}
+
 		$count = ntc_seed_demo_products();
 
 		add_settings_error(
@@ -277,14 +332,21 @@ function ntc_demo_admin_render() {
 		<form method="post">
 			<?php wp_nonce_field( 'ntc_demo_content' ); ?>
 
-			<p>
-				<button type="submit" name="ntc_demo_action" value="seed" class="button button-secondary">
-					Wstaw pozycje demonstracyjne
-				</button>
-				<span class="description" style="margin-left:8px">
-					Nie zdubluje tego, co już jest.
-				</span>
-			</p>
+			<?php if ( ntc_has_real_products() ) : ?>
+				<p class="description">
+					Wstawianie jest wyłączone: katalog ma już prawdziwe pozycje, a dane
+					z makiety nie mogą się z nimi mieszać.
+				</p>
+			<?php else : ?>
+				<p>
+					<button type="submit" name="ntc_demo_action" value="seed" class="button button-secondary">
+						Wstaw pozycje demonstracyjne
+					</button>
+					<span class="description" style="margin-left:8px">
+						Nie zdubluje tego, co już jest.
+					</span>
+				</p>
+			<?php endif; ?>
 
 			<p>
 				<button type="submit" name="ntc_demo_action" value="remove" class="button button-secondary"
