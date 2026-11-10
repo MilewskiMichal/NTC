@@ -68,6 +68,11 @@ dokumentacja, pochodzenie) i kategoria.
   alfabetycznie.
 - Blok „NTC - Kategoria oferty" wybiera kategorię w panelu po prawej i sam
   buduje tabelę razem z wyszukiwarką.
+- **Pamięć podręczna** - strony z tabelą mają w LiteSpeed Cache znacznik
+  `ntc_produkty`. Zapis, usunięcie albo przeniesienie produktu do kosza
+  (i każda zmiana kategorii) czyści tylko te strony. Sama wtyczka tego nie
+  robi, bo produkty to typ niepubliczny, więc bez znacznika tabela wisiałaby
+  w pamięci nawet tydzień.
 
 ### Dane demonstracyjne
 

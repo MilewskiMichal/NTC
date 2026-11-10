@@ -17,6 +17,9 @@ defined( 'ABSPATH' ) || exit;
 const NTC_PRODUCT_CPT = 'ntc_product';
 const NTC_PRODUCT_TAX = 'ntc_product_cat';
 
+/** Znacznik LiteSpeed Cache na stronach, które pokazują dane z katalogu. */
+const NTC_PRODUCT_CACHE_TAG = 'ntc_produkty';
+
 /**
  * Pola produktu, które mają wersję angielską.
  *
@@ -341,6 +344,10 @@ function ntc_get_products( $slug ) {
 		return array();
 	}
 
+	// Strona z tabelą nosi znacznik, po którym zmiana w katalogu wyrzuca ją z
+	// pamięci podręcznej (ntc_produkty_wyczysc_cache niżej).
+	do_action( 'litespeed_tag_add', NTC_PRODUCT_CACHE_TAG );
+
 	$query = new WP_Query(
 		array(
 			'post_type'              => NTC_PRODUCT_CPT,
@@ -408,6 +415,9 @@ function ntc_get_products( $slug ) {
  * @return array<string,string>
  */
 function ntc_product_categories() {
+	// Nazwy kategorii trafiają do zakładek, więc to też dane z katalogu.
+	do_action( 'litespeed_tag_add', NTC_PRODUCT_CACHE_TAG );
+
 	// Zakładki nad ofertą mają iść tak samo jak sekcje pod nimi, a te stoją w
 	// kolejności ustalonej z klientem, nie alfabetycznej. Prowadzi ją pole
 	// _ntc_order przy kategorii; bez niego decyduje kolejność zakładania.
@@ -447,3 +457,38 @@ function ntc_product_categories() {
 
 	return $out;
 }
+
+/* ------------------------------------------------ pamięć podręczna stron */
+
+/**
+ * Zmiana produktu wyrzuca z pamięci podręcznej strony z tabelami.
+ *
+ * Tabele są częścią HTML-u zwykłych stron. LiteSpeed Cache czyści strony przy
+ * zapisie strony, ale nie przy zapisie produktu, bo to typ niepubliczny.
+ * Sprawdzone na stagingu: po zapisie produktu oferta dalej szła z pamięci ze
+ * starym katalogiem, a pamięć trzyma strony przez tydzień. Czyścimy tylko
+ * strony ze znacznikiem NTC_PRODUCT_CACHE_TAG - reszta zostaje w pamięci.
+ *
+ * Bez wtyczki LiteSpeed Cache te akcje nic nie robią.
+ *
+ * @param int $post_id Wpis, który się zmienił.
+ */
+function ntc_produkty_wyczysc_cache( $post_id ) {
+	if ( NTC_PRODUCT_CPT === get_post_type( $post_id ) ) {
+		do_action( 'litespeed_purge', NTC_PRODUCT_CACHE_TAG );
+	}
+}
+add_action( 'save_post_' . NTC_PRODUCT_CPT, 'ntc_produkty_wyczysc_cache' );
+add_action( 'before_delete_post', 'ntc_produkty_wyczysc_cache' );
+add_action( 'trashed_post', 'ntc_produkty_wyczysc_cache' );
+add_action( 'untrashed_post', 'ntc_produkty_wyczysc_cache' );
+
+/**
+ * To samo przy zmianie kategorii oferty: nazwy idą do zakładek.
+ */
+function ntc_kategorie_wyczysc_cache() {
+	do_action( 'litespeed_purge', NTC_PRODUCT_CACHE_TAG );
+}
+add_action( 'created_' . NTC_PRODUCT_TAX, 'ntc_kategorie_wyczysc_cache' );
+add_action( 'edited_' . NTC_PRODUCT_TAX, 'ntc_kategorie_wyczysc_cache' );
+add_action( 'delete_' . NTC_PRODUCT_TAX, 'ntc_kategorie_wyczysc_cache' );
