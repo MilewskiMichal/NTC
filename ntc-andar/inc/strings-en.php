@@ -148,6 +148,22 @@ return array(
 	'form.sending'             => 'Sending…',
 	'form.error'               => 'We could not send the form. Please try again in a moment or write to us at %s',
 
+	/* ----------------------------------- Confirmation email to the sender */
+	'mail.confirm_subject'     => 'NTC Andar: we have received your enquiry',
+	'mail.confirm_hello'       => 'Hello,',
+	'mail.confirm_body'        => 'Thank you for the enquiry you sent via the form on %s. This is to confirm that it has reached us. We will get back to you as soon as we can.',
+	'mail.confirm_summary'     => 'Your enquiry:',
+	'mail.confirm_topic'       => 'Topic',
+	'mail.confirm_company'     => 'Company',
+	'mail.confirm_date'        => 'Sent',
+	'mail.confirm_contact'     => 'If you have any questions, please contact us:',
+	'mail.confirm_email'       => 'Email',
+	'mail.confirm_phone'       => 'Phone',
+	'mail.confirm_regards'     => 'Kind regards',
+	'mail.confirm_team'        => 'The NTC Andar team',
+	'mail.confirm_auto'        => 'This message was sent automatically. If you did not submit this form, please ignore it.',
+	'mail.country'             => 'Poland',
+
 	/* ------------------------------------------------------------------ Footer */
 	'footer.desc'              => 'Distributor of active substances for the pharmaceutical, food, veterinary and cosmetics industries. Since 2000.',
 	'footer.nav_heading'       => 'Navigation',

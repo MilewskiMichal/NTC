@@ -218,6 +218,11 @@ function ntc_zapytanie_przyjmij( $req ) {
 
 	update_post_meta( $id, '_ntc_z_mail', ntc_zapytanie_wyslij( $id, $dane ) ? 'wyslany' : 'blad' );
 
+	// Podziękowanie z potwierdzeniem dla wysyłającego, w języku strony, z
+	// której przyszło zgłoszenie.
+	$jezyk = 'en' === $req->get_param( 'jezyk' ) ? 'en' : 'pl';
+	update_post_meta( $id, '_ntc_z_potwierdzenie', ntc_zapytanie_potwierdz( $dane, $jezyk ) );
+
 	// Zgłoszenie jest bezpieczne w kokpicie, więc nawet przy kłopocie z
 	// pocztą odwiedzający dostaje potwierdzenie.
 	return new WP_REST_Response( array( 'ok' => true ), 200 );
@@ -269,6 +274,123 @@ function ntc_zapytanie_wyslij( $id, $dane ) {
 }
 
 /**
+ * Napis do maila z potwierdzeniem, w podanym języku.
+ *
+ * Mail wychodzi z trasy REST, a tam ntc_lang() nie zna języka strony (w adresie
+ * nie ma ?lang=en), więc słownik wybieramy sami. Brak klucza w EN spada na PL,
+ * jak wszędzie w motywie.
+ *
+ * @param string $klucz Klucz w słowniku.
+ * @param string $jezyk 'pl' albo 'en'.
+ * @return string
+ */
+function ntc_zapytanie_napis( $klucz, $jezyk ) {
+	$slownik = ntc_strings( $jezyk );
+	$pl      = ntc_strings( NTC_LANG_DEFAULT );
+
+	if ( isset( $slownik[ $klucz ] ) ) {
+		return $slownik[ $klucz ];
+	}
+
+	return isset( $pl[ $klucz ] ) ? $pl[ $klucz ] : '';
+}
+
+/**
+ * Pole zgłoszenia przytoczone w mailu na adres z formularza.
+ *
+ * Potwierdzenie idzie na adres, który ktoś wpisał w formularz - także cudzy.
+ * Gdyby mail powtarzał wszystko, co przyszło, formularz nadawałby się do
+ * rozsyłania obcych treści z naszej domeny. Dlatego przytaczamy tylko krótkie
+ * pola (temat, firma), bez linków, a treść wiadomości zostaje w kokpicie.
+ *
+ * @param string $tekst Wartość pola.
+ * @param int    $max   Najwięcej znaków.
+ * @return string
+ */
+function ntc_zapytanie_bez_linkow( $tekst, $max = 100 ) {
+	$tekst = preg_replace( '~(?:[a-z][a-z0-9+.-]*://|www\.)\S*~i', '[link]', (string) $tekst );
+
+	return mb_substr( trim( $tekst ), 0, $max );
+}
+
+/**
+ * Podziękowanie z potwierdzeniem dla osoby, która wysłała formularz.
+ *
+ * Odpowiedź z programu pocztowego trafia do firmy (Reply-To), nie na adres
+ * formularza. Najwyżej trzy potwierdzenia na dobę na jeden adres, żeby nikt
+ * nie zasypał cudzej skrzynki mailami od nas.
+ *
+ * @param array  $dane  Pola zgłoszenia.
+ * @param string $jezyk 'pl' albo 'en'.
+ * @return string 'wyslane', 'blad' albo 'limit'.
+ */
+function ntc_zapytanie_potwierdz( $dane, $jezyk ) {
+	$limit = 'ntc_potw_' . md5( strtolower( $dane['email'] ) );
+	$ile   = (int) get_transient( $limit );
+
+	if ( $ile >= 3 ) {
+		return 'limit';
+	}
+
+	set_transient( $limit, $ile + 1, DAY_IN_SECONDS );
+
+	$n    = function ( $klucz ) use ( $jezyk ) {
+		return ntc_zapytanie_napis( $klucz, $jezyk );
+	};
+	$co   = function_exists( 'ntc_company' ) ? ntc_company() : array();
+	$host = (string) wp_parse_url( home_url(), PHP_URL_HOST );
+
+	$linie = array(
+		$n( 'mail.confirm_hello' ),
+		'',
+		sprintf( $n( 'mail.confirm_body' ), $host ),
+		'',
+		$n( 'mail.confirm_summary' ),
+	);
+
+	if ( '' !== $dane['temat'] ) {
+		$linie[] = $n( 'mail.confirm_topic' ) . ': ' . ntc_zapytanie_bez_linkow( $dane['temat'] );
+	}
+
+	$linie[] = $n( 'mail.confirm_company' ) . ': ' . ntc_zapytanie_bez_linkow( $dane['firma'] );
+	$linie[] = $n( 'mail.confirm_date' ) . ': ' . wp_date( 'd.m.Y, H:i' );
+
+	$email   = isset( $co['email'] ) && is_email( $co['email'] ) ? $co['email'] : '';
+	$telefon = array_filter( array_map( 'trim', array( $co['phone'] ?? '', $co['mobile'] ?? '' ) ) );
+
+	if ( $email || $telefon ) {
+		$linie[] = '';
+		$linie[] = $n( 'mail.confirm_contact' );
+
+		if ( $email ) {
+			$linie[] = $n( 'mail.confirm_email' ) . ': ' . $email;
+		}
+
+		if ( $telefon ) {
+			$linie[] = $n( 'mail.confirm_phone' ) . ': ' . implode( ', ', $telefon );
+		}
+	}
+
+	$adres = implode( ', ', array_filter( array( $co['street'] ?? '', $co['city'] ?? '', $n( 'mail.country' ) ) ) );
+
+	$linie = array_merge(
+		$linie,
+		array( '', $n( 'mail.confirm_regards' ), $n( 'mail.confirm_team' ) ),
+		array_values( array_filter( array( $co['name'] ?? '', $adres, $host ) ) ),
+		array( '', '--', $n( 'mail.confirm_auto' ) )
+	);
+
+	$nazwa    = get_bloginfo( 'name' );
+	$naglowki = array( 'From: ' . ( $nazwa ? $nazwa : 'NTC Andar' ) . ' <' . ntc_zapytania_adres_nadawcy() . '>' );
+
+	if ( $email ) {
+		$naglowki[] = 'Reply-To: ' . $email;
+	}
+
+	return wp_mail( $dane['email'], $n( 'mail.confirm_subject' ), implode( "\n", $linie ) . "\n", $naglowki ) ? 'wyslane' : 'blad';
+}
+
+/**
  * Nadawca maili ze strony - adres w domenie strony zamiast "WordPress".
  *
  * Podpis DKIM (niżej) jest wystawiany właśnie na tę domenę.
@@ -283,11 +405,26 @@ function ntc_zapytania_nadawca( $adres ) {
 		return $wlasny;
 	}
 
-	$host = preg_replace( '/^www\./', '', (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
-
-	return 0 === strpos( $adres, 'wordpress@' ) && $host ? 'formularz@' . $host : $adres;
+	return 0 === strpos( $adres, 'wordpress@' ) ? ntc_zapytania_adres_nadawcy() : $adres;
 }
 add_filter( 'wp_mail_from', 'ntc_zapytania_nadawca' );
+
+/**
+ * Adres nadawcy maili ze strony: z Dostosuj albo formularz@<domena strony>.
+ *
+ * @return string
+ */
+function ntc_zapytania_adres_nadawcy() {
+	$wlasny = sanitize_email( (string) get_theme_mod( 'ntc_form_sender', '' ) );
+
+	if ( $wlasny && is_email( $wlasny ) ) {
+		return $wlasny;
+	}
+
+	$host = preg_replace( '/^www\./', '', (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
+
+	return $host ? 'formularz@' . $host : (string) get_option( 'admin_email' );
+}
 
 /**
  * Nazwa nadawcy.
@@ -457,6 +594,18 @@ function ntc_zapytania_metabox_html( $post ) {
 		nl2br( esc_html( '' !== $post->post_content ? $post->post_content : '(bez treści)' ) ),
 		'wyslany' === get_post_meta( $post->ID, '_ntc_z_mail', true ) ? 'wysłany' : 'nie wysłany - poczta nie przyjęła wiadomości'
 	);
+
+	// Zgłoszenia sprzed wprowadzenia potwierdzeń nie mają tego pola.
+	$potwierdzenie = array(
+		'wyslane' => 'wysłane na adres z formularza',
+		'blad'    => 'nie wysłane - poczta nie przyjęła wiadomości',
+		'limit'   => 'pominięte - ten adres dostał już 3 potwierdzenia w ciągu doby',
+	);
+	$stan          = (string) get_post_meta( $post->ID, '_ntc_z_potwierdzenie', true );
+
+	if ( isset( $potwierdzenie[ $stan ] ) ) {
+		printf( '<tr><th>Potwierdzenie dla klienta</th><td>%s</td></tr>', esc_html( $potwierdzenie[ $stan ] ) );
+	}
 
 	echo '</tbody></table>';
 

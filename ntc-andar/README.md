@@ -136,19 +136,27 @@ podmienić, a dla tych, które zostaną, sprawdzić licencję.
 
 ## Formularze
 
-Oba formularze (strona główna i kontakt) są **makietą**: walidują pola i
-pokazują kartę „Dziękujemy", ale **nic nie wysyłają**. Pod przyciskiem jest
-adnotacja, żeby nikt się nie nabrał.
+Oba formularze (strona główna i kontakt) wysyłają zgłoszenie skryptem do trasy
+REST `ntc/v1/zapytanie` (`inc/zapytania.php`). Po kolei:
 
-Podpięcie prawdziwej wysyłki:
+1. Zgłoszenie zapisuje się w kokpicie w **Zapytaniach**, więc nie ginie nawet
+   przy kłopocie z pocztą.
+2. Mail z pełną treścią idzie do firmy (odbiorcy w **Dostosuj → NTC -
+   Formularze**, domyślnie e-mail firmy). Odpowiedź z programu pocztowego trafia
+   prosto do klienta.
+3. Osoba, która wysłała formularz, dostaje mail z podziękowaniem i
+   potwierdzeniem, po polsku albo po angielsku, zależnie od wersji strony.
+   Mail przytacza tylko temat i firmę (bez linków), a odpowiedź na niego trafia
+   na e-mail firmy. Na jeden adres idą najwyżej trzy potwierdzenia na dobę, bo
+   formularz pozwala wpisać też cudzy adres. Teksty są w słownikach (`mail.*`).
 
-- **Wtyczką** (Contact Form 7, WPForms) - podmień wywołanie
-  `ntc_the_contact_form()` w `inc/forms.php` na `do_shortcode()` wtyczki.
-- **Ręcznie** - w `initForms()` w `assets/js/main.js` jest jedno oznaczone
-  komentarzem miejsce. Trzeba wtedy dorzucić nonce i walidację po stronie
-  serwera.
+Nadawca to `formularz@<domena strony>` albo adres z Dostosuj. Maile podpisuje
+DKIM (opcje `ntc_dkim_selektor` i `ntc_dkim_klucz`), gdy w DNS domeny jest
+rekord `<selektor>._domainkey`.
 
-Po podpięciu wyłącz adnotację w **Dostosuj → NTC - Formularze**.
+Przed spamem chronią ukryte pole-pułapka, podpisany znacznik z formularza,
+minimalny czas wypełniania i limit zgłoszeń z jednego adresu IP. Bez nonce'a,
+bo strony siedzą w pamięci podręcznej LiteSpeed.
 
 ## Fonty
 
@@ -181,7 +189,8 @@ ntc-andar/
 │   ├── blocks.php         definicje 20 bloków + renderowanie w PHP
 │   ├── patterns.php       trzy gotowe układy stron z treścią z makiety
 │   ├── post-types.php     typ treści Produkty + kategorie + pola
-│   ├── forms.php          dwa warianty formularza (makieta)
+│   ├── forms.php          dwa warianty formularza
+│   ├── zapytania.php      odbiór zgłoszeń, maile do firmy i potwierdzenia
 │   ├── customizer.php     dane firmowe, stopka, formularze
 │   ├── polylang.php       integracja i rejestracja napisów interfejsu
 │   ├── i18n.php           awaryjny przełącznik ?lang= bez Polylanga

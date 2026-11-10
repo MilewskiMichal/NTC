@@ -148,6 +148,22 @@ return array(
 	'form.sending'             => 'Wysyłanie…',
 	'form.error'               => 'Nie udało się wysłać formularza. Spróbuj ponownie za chwilę albo napisz do nas: %s',
 
+	/* ------------------------------ Mail z potwierdzeniem dla wysyłającego */
+	'mail.confirm_subject'     => 'NTC Andar: potwierdzenie otrzymania zapytania',
+	'mail.confirm_hello'       => 'Dzień dobry,',
+	'mail.confirm_body'        => 'dziękujemy za zapytanie wysłane przez formularz na stronie %s. Potwierdzamy, że do nas dotarło. Odpowiemy najszybciej, jak to możliwe.',
+	'mail.confirm_summary'     => 'Dane zapytania:',
+	'mail.confirm_topic'       => 'Temat',
+	'mail.confirm_company'     => 'Firma',
+	'mail.confirm_date'        => 'Wysłano',
+	'mail.confirm_contact'     => 'W razie pytań prosimy o kontakt:',
+	'mail.confirm_email'       => 'E-mail',
+	'mail.confirm_phone'       => 'Telefon',
+	'mail.confirm_regards'     => 'Z pozdrowieniami',
+	'mail.confirm_team'        => 'Zespół NTC Andar',
+	'mail.confirm_auto'        => 'Ta wiadomość została wysłana automatycznie. Jeśli to nie Państwo wysłali formularz, prosimy ją zignorować.',
+	'mail.country'             => '',
+
 	/* ---------------------------------------------------------------------- Stopka */
 	'footer.desc'              => 'Dystrybutor substancji aktywnych dla przemysłu farmaceutycznego, spożywczego, weterynaryjnego i kosmetycznego. Od 2000 roku.',
 	'footer.nav_heading'       => 'Nawigacja',
