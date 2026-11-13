@@ -25,6 +25,7 @@ require_once get_template_directory() . '/inc/tlumaczenia.php';
 require_once get_template_directory() . '/inc/kokpit.php';
 require_once get_template_directory() . '/inc/przekierowania.php';
 require_once get_template_directory() . '/inc/zapytania.php';
+require_once get_template_directory() . '/inc/ikona.php';
 
 /**
  * Podstawowe wsparcie funkcji WordPressa.

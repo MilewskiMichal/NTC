@@ -158,6 +158,21 @@ Przed spamem chronią ukryte pole-pułapka, podpisany znacznik z formularza,
 minimalny czas wypełniania i limit zgłoszeń z jednego adresu IP. Bez nonce'a,
 bo strony siedzą w pamięci podręcznej LiteSpeed.
 
+## Ikona strony (favicon)
+
+Ikona na karcie przeglądarki to litery „NTC” wyjęte wektorowo z logo (plik
+`logo NTC Andar - podstawowe.pdf`) na tle w kolorach obwódki logo (`#1F296E` →
+`#049899`). Pliki są w `assets/favicon/`, a źródłem jest `favicon.svg`:
+
+- `favicon.svg` - przeglądarki, które czytają SVG (Chrome, Firefox, Edge),
+- `favicon.ico` - 16, 32 i 48 px dla pozostałych,
+- `apple-touch-icon.png` - 180 px, pełne tło (iPhone sam zaokrągla rogi),
+- `icon-192.png`, `icon-512.png` - Android i duże rozmiary.
+
+`inc/ikona.php` podsuwa te pliki WordPressowi, więc znaczniki wypisuje on sam:
+na stronie, w kokpicie i przy logowaniu. Ikona ustawiona w **Dostosuj →
+Tożsamość witryny** ma pierwszeństwo przed plikami motywu.
+
 ## Fonty
 
 Barlow jest **hostowany w motywie** (`assets/fonts/`, 16 plików woff2), a nie
