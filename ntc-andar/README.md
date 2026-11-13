@@ -160,13 +160,15 @@ bo strony siedzą w pamięci podręcznej LiteSpeed.
 
 ## Ikona strony (favicon)
 
-Ikona na karcie przeglądarki to litery „NTC” wyjęte wektorowo z logo (plik
-`logo NTC Andar - podstawowe.pdf`) na tle w kolorach obwódki logo (`#1F296E` →
-`#049899`). Pliki są w `assets/favicon/`, a źródłem jest `favicon.svg`:
+Ikona na karcie przeglądarki to uproszczone logo klienta (plik
+`logo NTC Andar uproszczone - kolor.pdf`): „NTC” w obwódce, wektorowo, na
+przezroczystym tle. Obwódka ma gradient `#1F296E` → `#049899`, litery
+`#1F4493`. Pliki są w `assets/favicon/`, a źródłem jest `favicon.svg`:
 
 - `favicon.svg` - przeglądarki, które czytają SVG (Chrome, Firefox, Edge),
 - `favicon.ico` - 16, 32 i 48 px dla pozostałych,
-- `apple-touch-icon.png` - 180 px, pełne tło (iPhone sam zaokrągla rogi),
+- `apple-touch-icon.png` - 180 px na białym tle, bo iOS zamienia przezroczystość
+  na czarne,
 - `icon-192.png`, `icon-512.png` - Android i duże rozmiary.
 
 `inc/ikona.php` podsuwa te pliki WordPressowi, więc znaczniki wypisuje on sam:

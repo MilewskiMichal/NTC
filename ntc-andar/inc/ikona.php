@@ -3,9 +3,10 @@
  * Ikona strony (favicon) z logo NTC Andar.
  *
  * Bez niej Chrome pokazywał na karcie szarą planetę: strona nie miała ikony, a
- * adres /favicon.ico serwer zwraca jako 404. Ikona to litery "NTC" wyjęte
- * wektorowo z logo (logo NTC Andar - podstawowe.pdf) na tle w kolorach obwódki
- * logo. Pełny napis "NTC ANDAR" w kafelku 16 px byłby nieczytelny.
+ * adres /favicon.ico serwer zwraca jako 404. Ikona to uproszczone logo klienta
+ * (logo NTC Andar uproszczone - kolor.pdf): "NTC" w obwódce, wektorowo, na
+ * przezroczystym tle. Wyjątek to wersja na iPhone'a, która ma białe tło, bo
+ * iOS zamienia przezroczystość na czarne.
  *
  * Pliki leżą w assets/favicon/, a źródłem jest favicon.svg. WordPress wypisuje
  * znaczniki ikony (wp_site_icon - na stronie, w kokpicie i przy logowaniu)
