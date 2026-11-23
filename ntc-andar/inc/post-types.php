@@ -492,3 +492,48 @@ function ntc_kategorie_wyczysc_cache() {
 add_action( 'created_' . NTC_PRODUCT_TAX, 'ntc_kategorie_wyczysc_cache' );
 add_action( 'edited_' . NTC_PRODUCT_TAX, 'ntc_kategorie_wyczysc_cache' );
 add_action( 'delete_' . NTC_PRODUCT_TAX, 'ntc_kategorie_wyczysc_cache' );
+
+/* ------------------------------------------------------ ekran produktów */
+
+/**
+ * Bez ramek "Własne pola" i "Uproszczona nazwa" w formularzu produktu.
+ *
+ * Obsługa pól własnych musi zostać włączona, bo bez niej pola produktu nie
+ * wychodzą w REST (komentarz przy register_post_type). Same ramki tylko myliły:
+ * wszystko, co się wpisuje, jest w "Dane substancji", a produkty nie mają
+ * własnych adresów.
+ */
+function ntc_product_bez_zbednych_ramek() {
+	remove_meta_box( 'postcustom', NTC_PRODUCT_CPT, 'normal' );
+	remove_meta_box( 'slugdiv', NTC_PRODUCT_CPT, 'normal' );
+}
+add_action( 'add_meta_boxes_' . NTC_PRODUCT_CPT, 'ntc_product_bez_zbednych_ramek', 99 );
+
+/**
+ * Filtr kategorii nad listą produktów.
+ *
+ * WordPress daje taką listę rozwijaną tylko zwykłym kategoriom wpisów. Przy
+ * kilkuset produktach w siedmiu kategoriach bez niej trudno się poruszać.
+ *
+ * @param string $typ Typ treści na liście.
+ */
+function ntc_product_filtr_kategorii( $typ ) {
+	if ( NTC_PRODUCT_CPT !== $typ ) {
+		return;
+	}
+
+	wp_dropdown_categories(
+		array(
+			'taxonomy'        => NTC_PRODUCT_TAX,
+			'name'            => NTC_PRODUCT_TAX,
+			'value_field'     => 'slug',
+			'selected'        => isset( $_GET[ NTC_PRODUCT_TAX ] ) ? sanitize_key( wp_unslash( $_GET[ NTC_PRODUCT_TAX ] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- tylko filtr listy.
+			'show_option_all' => 'Wszystkie kategorie',
+			'hide_empty'      => false,
+			'hierarchical'    => true,
+			'show_count'      => true,
+			'orderby'         => 'name',
+		)
+	);
+}
+add_action( 'restrict_manage_posts', 'ntc_product_filtr_kategorii' );
