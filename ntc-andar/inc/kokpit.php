@@ -700,7 +700,11 @@ add_action( 'enqueue_block_editor_assets', 'ntc_kokpit_jezyk_w_edytorze' );
  * @return array
  */
 function ntc_kokpit_akcje_wiersza( $akcje, $post ) {
-	if ( ! current_user_can( 'edit_post', $post->ID ) || 'trash' === $post->post_status ) {
+	// post_row_actions dotyczy każdego typu bez hierarchii, a wersje
+	// angielskie mają tylko strony i wpisy. Produkty mają pola EN w
+	// formularzu, a zapytań się nie tłumaczy - tam link prowadził do błędu.
+	if ( ! in_array( $post->post_type, array( 'page', 'post' ), true )
+		|| ! current_user_can( 'edit_post', $post->ID ) || 'trash' === $post->post_status ) {
 		return $akcje;
 	}
 
