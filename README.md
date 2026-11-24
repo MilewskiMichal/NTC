@@ -8,6 +8,8 @@ NTC ANDAR Sp. z o.o. Staging: https://ntc-strona.salescons.pl
 - `ntc-andar/` - motyw (bloki serwerowe, szablony, style)
 - `ntc-deploy/` - wtyczka wdrożeniowa (wysyłka plików, wsadowe operacje na treści)
 - `tools/` - skrypty wdrożeniowe
+- `dokumentacja/` - instrukcja obsługi strony dla Klienta (Word, ze zrzutami
+  z panelu WordPress, stan na 23.11.2026)
 
 ## Uwaga
 
